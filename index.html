@@ -1,0 +1,1822 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>公司補助・企業貸款媒合工具</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#f4f6f3; --surface:#ffffff; --surface2:#eef2ec; --ink:#1c2b26; --ink2:#43564e;
+        --line:#d5ddd3; --brand:#0e5f4c; --brand-ink:#ffffff; --accent:#c07f13; --accent-bg:#fdf3dd;
+        --ok:#0e7a3d; --ok-bg:#e5f4e9; --mid:#9a6a00; --mid-bg:#fdf0d3; --no:#8a4a42; --no-bg:#f6e9e6;
+        --chip:#e7eee6; --shadow:0 1px 3px rgba(20,40,30,.08),0 6px 18px rgba(20,40,30,.06);
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#101613; --surface:#182019; --surface2:#1f2a21; --ink:#e8efe9; --ink2:#aebbb1;
+          --line:#33413a; --brand:#2ea37f; --brand-ink:#0b1512; --accent:#e0a83e; --accent-bg:#3a2f14;
+          --ok:#5cc98a; --ok-bg:#173325; --mid:#e3b34c; --mid-bg:#38300f; --no:#d99a8f; --no-bg:#38231f;
+          --chip:#243128; --shadow:0 1px 3px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+        }
+      }
+      *{box-sizing:border-box}
+      body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.65;-webkit-text-size-adjust:100%}
+      .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 56px}
+      header.top{padding:14px 2px 4px}
+      .brand-line{font-size:13px;font-weight:900;letter-spacing:.22em;color:var(--brand);margin:0 0 8px}
+      .brand-line span{color:var(--accent);letter-spacing:.05em;margin-left:8px;font-weight:700}
+      h1{font-family:"Noto Serif TC",serif;font-weight:900;font-size:clamp(26px,5vw,38px);margin:0 0 6px;letter-spacing:.01em}
+      .lede{color:var(--ink2);max-width:46em;margin:0;font-size:15.5px}
+      .meta-line{margin-top:10px;font-size:13px;color:var(--ink2)}
+      .meta-line b{color:var(--accent)}
+      /* tabs */
+      .tabs{display:flex;gap:8px;margin:22px 0 18px;border-bottom:2px solid var(--line)}
+      .tab{appearance:none;border:0;background:none;font:inherit;font-weight:700;font-size:17px;color:var(--ink2);
+        padding:10px 18px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+      .tab[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+      .tab .cnt{font-size:12.5px;font-weight:700;background:var(--chip);border-radius:20px;padding:1px 8px;margin-left:6px;color:var(--ink2);white-space:nowrap}
+      @media (max-width:560px){.tab{padding:10px 9px;font-size:15.5px}.tab .cnt{margin-left:4px;padding:1px 6px}}
+      .tab[aria-selected="true"] .cnt{background:var(--brand);color:var(--brand-ink)}
+      /* layout */
+      .layout{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+      @media (max-width:860px){.layout{grid-template-columns:1fr}}
+      .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+      form.panel{padding:18px;position:sticky;top:14px}
+      @media (max-width:860px){form.panel{position:static}}
+      form h2{font-size:16px;margin:0 0 4px;font-family:"Noto Serif TC",serif}
+      form .hint{font-size:12.5px;color:var(--ink2);margin:0 0 14px}
+      fieldset{border:0;padding:0;margin:0 0 14px}
+      legend{font-size:13px;font-weight:700;color:var(--brand);margin-bottom:8px;padding:0}
+      label.f{display:block;font-size:13px;font-weight:500;margin-bottom:10px}
+      label.f span{display:block;margin-bottom:4px;color:var(--ink2)}
+      select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);
+        border-radius:9px;background:var(--surface);color:var(--ink)}
+      select:focus,input:focus{outline:2px solid var(--brand);outline-offset:1px}
+      .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+      .chips{display:flex;flex-wrap:wrap;gap:7px}
+      .chip{appearance:none;font:inherit;font-size:13.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);
+        background:var(--chip);color:var(--ink);cursor:pointer}
+      .chip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+      .preset{width:100%;font:inherit;font-weight:700;font-size:14.5px;padding:10px;border-radius:10px;border:1px dashed var(--accent);
+        background:var(--accent-bg);color:var(--ink);cursor:pointer;margin-top:2px}
+      .note{font-size:12.5px;color:var(--ink2);margin-top:10px}
+      /* results */
+      .summary{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+      .stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 16px;box-shadow:var(--shadow)}
+      .stat .n{font-family:"Noto Serif TC",serif;font-size:22px;font-weight:900;line-height:1.15}
+      .stat .t{font-size:12.5px;color:var(--ink2)}
+      .filterbar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:0 0 12px}
+      .filterbar label{font-size:12.5px;color:var(--ink2);display:block}
+      .filterbar label span{display:block;margin-bottom:3px;font-weight:700}
+      .filterbar select{width:auto;min-width:150px;font-size:14px;padding:7px 9px}
+      .filterbar .total{margin-left:auto;font-size:13.5px;color:var(--ink2);padding-bottom:8px}
+      .filterbar .total b{color:var(--brand);font-size:16px}
+      @media (max-width:560px){.filterbar .total{margin-left:0}}
+      .filters{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
+      .fbtn{appearance:none;font:inherit;font-size:13.5px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+      .fbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+      .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+      .card.dim{opacity:.62}
+      .card-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+      .card h3{font-family:"Noto Serif TC",serif;font-size:19px;margin:0;line-height:1.35}
+      .agency{font-size:13px;color:var(--ink2);margin-top:2px}
+      .badge{font-size:12.5px;font-weight:700;border-radius:999px;padding:3px 11px;white-space:nowrap}
+      .b-ok{background:var(--ok-bg);color:var(--ok)} .b-mid{background:var(--mid-bg);color:var(--mid)} .b-no{background:var(--no-bg);color:var(--no)}
+      .amount{font-family:"Noto Serif TC",serif;font-size:19px;font-weight:900;color:var(--brand);margin:10px 0 6px;line-height:1.5}
+      .amount small{font-size:13px;color:var(--ink2);font-family:"Noto Sans TC",sans-serif;font-weight:500}
+      .deadline{display:inline-block;font-size:13px;font-weight:700;background:var(--accent-bg);color:var(--accent);border-radius:8px;padding:2px 10px;margin:4px 0 8px}
+      .desc{font-size:14.5px;margin:4px 0 10px}
+      .desc b{color:var(--ink2);font-size:12.5px;display:block;margin-bottom:2px}
+      .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;font-size:14px;margin:6px 0 4px}
+      @media (max-width:560px){.grid2{grid-template-columns:1fr}}
+      .grid2 dt{color:var(--ink2);font-size:12.5px}
+      .grid2 dd{margin:0 0 8px}
+      details{margin-top:6px;border-top:1px solid var(--line);padding-top:10px}
+      summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--brand)}
+      details ul{margin:8px 0 4px;padding-left:20px;font-size:14px}
+      details li{margin-bottom:3px}
+      .reasons{font-size:13.5px;margin:8px 0 0;padding:10px 12px;border-radius:10px;background:var(--surface2)}
+      .reasons li{margin-bottom:2px}
+      .reasons ul{margin:0;padding-left:18px}
+      a.official{display:inline-block;margin-top:10px;font-weight:700;font-size:14.5px;color:var(--brand);text-decoration:none;border-bottom:2px solid var(--accent)}
+      a.official:hover{text-decoration:underline}
+      .empty{padding:26px;text-align:center;color:var(--ink2)}
+      footer{margin-top:26px;font-size:13px;color:var(--ink2);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+      footer p{margin:0 0 6px}
+      footer p:last-child{margin-bottom:0}
+      .channel-note{font-size:13.5px;font-weight:700;border-radius:10px;padding:8px 12px;margin:8px 0;background:var(--accent-bg);color:var(--accent)}
+      .pending-note{font-size:13.5px;font-weight:700;border-radius:10px;padding:8px 12px;margin:8px 0;background:var(--mid-bg);color:var(--mid)}
+      .verify-line{font-size:12.5px;color:var(--ink2);margin-top:8px}
+      .loan-total-line{font-size:13.5px;color:var(--ink2);margin:0 0 12px}
+      .loan-total-line b{color:var(--brand);font-size:16px}
+      .hidden{display:none!important}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <p class="brand-line">UR CAPITAL<span>出品</span></p>
+        <h1>公司補助・企業貸款媒合工具</h1>
+        <p class="lede">填一次公司條件，同時比對中央與地方政府補助計畫、政策性貸款與銀行專案。結果會告訴你符合哪幾項、金額或額度多少、資格條件、受理方式、要備哪些文件，並附官方連結。</p>
+        <p class="meta-line">資料查證日期：<b>2026 年 10 月 20 日</b>・<b>每月更新</b>（金額、資格與受理期間均查證自各機關官方公告）・全站共收錄 <b>88 項</b>（補助 66 項＋貸款 22 項）</p>
+      </header>
+
+      <div class="tabs" role="tablist" aria-label="媒合類別">
+        <button class="tab" role="tab" id="tab-subsidy" aria-selected="true" aria-controls="pane-subsidy">公司補助<span class="cnt" id="cnt-subsidy"></span></button>
+        <button class="tab" role="tab" id="tab-loan" aria-selected="false" aria-controls="pane-loan">企業貸款<span class="cnt" id="cnt-loan"></span></button>
+      </div>
+
+      <!-- ============ 補助分頁 ============ -->
+      <section id="pane-subsidy" role="tabpanel" aria-labelledby="tab-subsidy">
+        <div class="layout">
+          <form class="panel" id="subsidy-form">
+            <h2>你的公司條件</h2>
+            <p class="hint">已預填一間臺北市商業服務業示範公司的條件，直接改成你的公司即可重新媒合。公司條件與貸款分頁共用一份。</p>
+            <fieldset>
+              <legend>公司基本資料（與貸款分頁共用）</legend>
+              <label class="f"><span>公司型態</span>
+                <select id="s-type">
+                  <option value="company" selected>公司</option>
+                  <option value="limited-partnership">有限合夥</option>
+                  <option value="business">商業／行號</option>
+                  <option value="sole">獨資／合夥</option>
+                </select></label>
+              <label class="f"><span>登記縣市</span>
+                <select id="s-city">
+                  <option value="any">不限</option>
+                  <option value="keelung">基隆市</option>
+                  <option value="taipei" selected>臺北市</option>
+                  <option value="newtaipei">新北市</option>
+                  <option value="taoyuan">桃園市</option>
+                  <option value="hsinchu-city">新竹市</option>
+                  <option value="hsinchu-county">新竹縣</option>
+                  <option value="miaoli">苗栗縣</option>
+                  <option value="taichung">臺中市</option>
+                  <option value="changhua">彰化縣</option>
+                  <option value="nantou">南投縣</option>
+                  <option value="yunlin">雲林縣</option>
+                  <option value="chiayi-city">嘉義市</option>
+                  <option value="chiayi-county">嘉義縣</option>
+                  <option value="tainan">臺南市</option>
+                  <option value="kaohsiung">高雄市</option>
+                  <option value="pingtung">屏東縣</option>
+                  <option value="yilan">宜蘭縣</option>
+                  <option value="hualien">花蓮縣</option>
+                  <option value="taitung">臺東縣</option>
+                  <option value="penghu">澎湖縣</option>
+                  <option value="kinmen">金門縣</option>
+                  <option value="lienchiang">連江縣</option>
+                </select></label>
+              <label class="f"><span>產業別</span>
+                <select id="s-industry">
+                  <option value="manufacturing">製造業</option>
+                  <option value="service" selected>商業服務業</option>
+                  <option value="software">軟體資訊業</option>
+                  <option value="agriculture">農業</option>
+                  <option value="culture">文創影視</option>
+                  <option value="music">流行音樂</option>
+                  <option value="tourism">觀光餐飲</option>
+                  <option value="other">其他</option>
+                </select></label>
+              <div class="row2">
+                <label class="f"><span>成立年資（年）</span><input type="number" id="s-years" value="3" min="0" step="0.5" /></label>
+                <label class="f"><span>員工人數</span><input type="number" id="s-employees" value="3" min="0" /></label>
+              </div>
+              <div class="row2">
+                <label class="f"><span>實收資本額（萬元）</span><input type="number" id="s-capital" value="80" min="0" /></label>
+                <label class="f"><span>年營收（萬元）</span><input type="number" id="s-revenue" value="1600" min="0" /></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>負責人與特殊身分（與貸款分頁共用）</legend>
+              <div class="row2">
+                <label class="f"><span>負責人年齡</span><input type="number" id="s-age" value="30" min="18" max="99" /></label>
+                <label class="f"><span>負責人性別</span>
+                  <select id="s-gender">
+                    <option value="any" selected>不拘</option>
+                    <option value="female">女性</option>
+                    <option value="male">男性</option>
+                  </select></label>
+              </div>
+              <label class="f"><span>負責人設籍縣市</span>
+                <select id="s-residence"></select></label>
+              <label class="f"><span>特殊身分</span>
+                <select id="s-identity">
+                  <option value="none" selected>都不是</option>
+                  <option value="indigenous">原住民</option>
+                  <option value="hakka">客家文化重點發展區</option>
+                  <option value="midage-unemployed">失業中高齡</option>
+                </select></label>
+              <label class="f"><span>是否已完成創業輔導課程 20 小時</span>
+                <select id="s-course">
+                  <option value="no" selected>尚未完成</option>
+                  <option value="yes">已完成 20 小時以上</option>
+                </select></label>
+            </fieldset>
+            <fieldset>
+              <legend>補助需求類型（可複選）</legend>
+              <div class="chips" id="s-needs">
+                <button type="button" class="chip" data-need="rd" aria-pressed="true">研發</button>
+                <button type="button" class="chip" data-need="hire" aria-pressed="true">僱人</button>
+                <button type="button" class="chip" data-need="training" aria-pressed="false">培訓</button>
+                <button type="button" class="chip" data-need="digital" aria-pressed="false">數位轉型／AI</button>
+                <button type="button" class="chip" data-need="marketing" aria-pressed="false">行銷展覽</button>
+                <button type="button" class="chip" data-need="energy" aria-pressed="false">節能</button>
+                <button type="button" class="chip" data-need="childcare" aria-pressed="false">托育</button>
+                <button type="button" class="chip" data-need="tax" aria-pressed="false">租稅抵減</button>
+              </div>
+            </fieldset>
+            <button type="button" class="preset" id="s-sample">載入範例：臺北市商業服務業示範公司（成立 3 年・3 人・資本額 80 萬・負責人 30 歲）</button>
+            <p class="note">媒合為初步資格比對，不代表審查結果；補助多需自籌款（多為總經費 50%），且補助款不得大於實收資本額的限制常見於研發型計畫。</p>
+          </form>
+
+          <div>
+            <div class="filterbar">
+              <label><span>適用地區</span>
+                <select id="f-region">
+                  <option value="all" selected>全部地區</option>
+                  <option value="nationwide">全國</option>
+                  <option value="rural">農村社區</option>
+                  <optgroup label="各縣市（全國計畫全台適用）">
+                    <option value="keelung">基隆市</option>
+                    <option value="taipei">臺北市</option>
+                    <option value="newtaipei">新北市</option>
+                    <option value="taoyuan">桃園市</option>
+                    <option value="hsinchu-city">新竹市</option>
+                    <option value="hsinchu-county">新竹縣</option>
+                    <option value="miaoli">苗栗縣</option>
+                    <option value="taichung">臺中市</option>
+                    <option value="changhua">彰化縣</option>
+                    <option value="nantou">南投縣</option>
+                    <option value="yunlin">雲林縣</option>
+                    <option value="chiayi-city">嘉義市</option>
+                    <option value="chiayi-county">嘉義縣</option>
+                    <option value="tainan">臺南市</option>
+                    <option value="kaohsiung">高雄市</option>
+                    <option value="pingtung">屏東縣</option>
+                    <option value="yilan">宜蘭縣</option>
+                    <option value="hualien">花蓮縣</option>
+                    <option value="taitung">臺東縣</option>
+                    <option value="penghu">澎湖縣</option>
+                    <option value="kinmen">金門縣</option>
+                    <option value="lienchiang">連江縣</option>
+                  </optgroup>
+                </select></label>
+              <label><span>需求類型</span>
+                <select id="f-need">
+                  <option value="all" selected>全部需求類型</option>
+                  <option value="rd">研發</option>
+                  <option value="hire">僱人</option>
+                  <option value="training">培訓</option>
+                  <option value="digital">數位轉型／AI</option>
+                  <option value="marketing">行銷展覽</option>
+                  <option value="energy">節能</option>
+                  <option value="childcare">托育</option>
+                  <option value="tax">租稅抵減</option>
+                </select></label>
+              <div class="total">目前收錄補助計畫共 <b id="subsidy-total">66</b> 項</div>
+            </div>
+            <div class="summary" id="subsidy-summary"></div>
+            <div class="filters" id="subsidy-filters">
+              <button type="button" class="fbtn" data-f="all" aria-pressed="true">全部</button>
+              <button type="button" class="fbtn" data-f="ok" aria-pressed="false">符合</button>
+              <button type="button" class="fbtn" data-f="mid" aria-pressed="false">可能符合</button>
+              <button type="button" class="fbtn" data-f="no" aria-pressed="false">不符合</button>
+            </div>
+            <div id="subsidy-results"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 貸款分頁 ============ -->
+      <section id="pane-loan" role="tabpanel" aria-labelledby="tab-loan" class="hidden">
+        <div class="layout">
+          <form class="panel" id="loan-form">
+            <h2>貸款條件</h2>
+            <p class="hint">公司基本資料、負責人年齡／性別／設籍縣市與創業課程時數，都在補助分頁的公司條件中共用（在那邊修改會同步）；以下為貸款專用問題。已預填 200 萬營運週轉的範例。</p>
+            <fieldset>
+              <legend>資金需求</legend>
+              <label class="f"><span>貸款金額需求（萬元）</span><input type="number" id="l-amount" value="200" min="0" /></label>
+              <label class="f"><span>貸款用途</span>
+                <select id="l-purpose">
+                  <option value="working" selected>營運週轉</option>
+                  <option value="capital">設備購置／資本支出</option>
+                  <option value="startup">創業啟動</option>
+                </select></label>
+              <label class="f"><span>能否提供擔保品或保證人</span>
+                <select id="l-collateral">
+                  <option value="guarantor" selected>可提供保證人，無不動產擔保品</option>
+                  <option value="asset">可提供不動產等擔保品</option>
+                  <option value="none">無法提供擔保品或保證人</option>
+                </select></label>
+            </fieldset>
+            <fieldset>
+              <legend>加分條件</legend>
+              <label class="f"><span>曾獲政府研發補助／創新獎項或具創新證明</span>
+                <select id="l-innovation"><option value="no" selected>否</option><option value="yes">是（曾獲 SBIR／SIIR／CITD 等）</option></select></label>
+              <label class="f"><span>是否規劃數位／淨零／通路轉型</span>
+                <select id="l-transform"><option value="no" selected>否</option><option value="yes">是</option></select></label>
+            </fieldset>
+            <button type="button" class="preset" id="l-sample">載入範例：週轉金 200 萬・負責人 30 歲・創業課程未完成</button>
+            <p class="note">政策性貸款多透過中小企業信用保證基金保證（最高九成至十成），負責人通常須任連帶保證人；實際核貸由承貸銀行審查信用與還款能力。</p>
+          </form>
+
+          <div>
+            <p class="loan-total-line">目前收錄貸款共 <b id="loan-total">22</b> 項・全站合計 <b>88</b> 項（補助 66 項＋貸款 22 項）。其中標示「保證通道」「融資協助通道」者性質不同於貸款本體；標示「部分待複核」者，部分規格以主管機關公告為準。</p>
+            <div class="summary" id="loan-summary"></div>
+            <div class="filters" id="loan-filters">
+              <button type="button" class="fbtn" data-f="all" aria-pressed="true">全部</button>
+              <button type="button" class="fbtn" data-f="ok" aria-pressed="false">符合</button>
+              <button type="button" class="fbtn" data-f="mid" aria-pressed="false">可能符合／補件後符合</button>
+              <button type="button" class="fbtn" data-f="no" aria-pressed="false">不符合</button>
+            </div>
+            <div id="loan-results"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p><b>免責聲明：</b>本工具資料整理自政府官方公告，僅供初步媒合參考，不構成申請保證或專業意見；各計畫資格、金額與受理期間以主管機關最新公告為準，申請前請至官方連結確認。</p>
+        <p>資料來源：經濟部中小及新創企業署、經濟部商業發展署、經濟部產業發展署、經濟部產業技術司、勞動部勞動力發展署、文化部、文化內容策進院、農業部、數位發展部數位產業署、原住民族委員會、客家委員會及各縣市政府產業發展／經濟發展／青年事務主管機關等官方公告（查證日期 2026-10-20）。標示「官方未明載」的項目，表示本次查證未取得官方數字，已如實標註、未臆測。</p>
+      </footer>
+    </div>
+
+    <script>
+    "use strict";
+    var $ = function(id){ return document.getElementById(id); };
+    function num(id){ var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
+    function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+    function profile(){
+      return {
+        type: $("s-type").value, city: $("s-city").value, industry: $("s-industry").value,
+        years: num("s-years"), employees: num("s-employees"), capital: num("s-capital"), revenue: num("s-revenue"),
+        age: num("s-age"), gender: $("s-gender").value, residence: $("s-residence").value,
+        identity: $("s-identity").value, course20: $("s-course").value === "yes"
+      };
+    }
+    function isSME(p){ return p.capital <= 10000 || p.employees < 200; }
+    function isService(p){ return p.industry === "service" || p.industry === "tourism"; }
+    function isCompanyOrLP(p){ return p.type === "company" || p.type === "limited-partnership"; }
+    function capitalNote(p, threshold){
+      return p.capital < threshold ? "提醒：補助款 ≤ 自籌款 ≤ 實收資本額，你目前資本額 " + p.capital + " 萬元，實務申請額度會先被資本額卡住" : null;
+    }
+
+    /* 地方計畫共用判定：登記縣市閘門、設籍縣市閘門、中小企業規模閘門 */
+    function cityGate(p, key, label, ok, no){
+      if(p.city === key){ ok.push("公司登記於" + label + "，符合地區資格"); return false; }
+      if(p.city === "any"){ ok.push("登記縣市未指定，本計畫限登記於" + label + "者申請，送件前請確認登記地"); return true; }
+      no.push("公司登記縣市須為" + label + "，你目前登記於其他縣市"); return false;
+    }
+    function residenceGate(p, key, label, ok, no){
+      if(p.residence === key){ ok.push("負責人設籍於" + label); return false; }
+      if(p.residence === "any"){ ok.push("負責人設籍縣市未指定，本計畫須設籍" + label + "，送件前請確認"); return true; }
+      no.push("負責人須設籍" + label + "，目前設籍於其他縣市"); return false;
+    }
+    function smeGate(p, ok, no){
+      if(isSME(p)) ok.push("符合中小企業規模（資本額 1 億元以下或員工未滿 200 人）");
+      else no.push("限中小企業（資本額 1 億元以下或員工未滿 200 人）");
+    }
+
+    /* ================= 補助資料庫：中央計畫 30 項＋地方計畫 36 項，共 66 項（查證 2026-10-20） ================= */
+    /* check 回傳 {ok:[], no:[], special:bool}：special=true 表示含工具無法判定的特殊條件 */
+    var SUBSIDIES = [
+    {
+      id:"a01", name:"SBIR 小型企業創新研發計畫", agency:"經濟部中小及新創企業署",
+      region:"全國", regionKey:"nationwide", needs:["rd"], maxWan:1200,
+      amount:"個別 Phase1 150 萬、Phase2 每年 600 萬／全程 1,200 萬、Phase2+ 600 萬；聯盟 Phase2 最高 3,000 萬、Phase2+ 最高 2,500 萬（每家全程上限 1,000 萬）；不逾總經費 50%",
+      elig:"中小企業（資本額 1 億元以下或員工未滿 200 人），自籌款 ≤ 實收資本額",
+      accept:"隨到隨受理",
+      docs:["計畫申請書與計畫書","登記證明","最近一年會計師財簽報告或營所稅申報書","勞保投保資料","無欠稅證明"],
+      url:"https://sbir.org.tw/download/downloadarea/115年SBIR申請須知ctYsBK.pdf", urlText:"115 年 SBIR 申請須知（PDF）",
+      check:function(p){
+        var ok=[], no=[];
+        if(isSME(p)) ok.push("符合中小企業認定（資本額 1 億元以下或員工未滿 200 人）"); else no.push("非中小企業（資本額逾 1 億元且員工 200 人以上）");
+        var cn = capitalNote(p, 150); if(cn) ok.push(cn);
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a02", name:"SIIR 服務業創新研發計畫", agency:"經濟部商業發展署",
+      region:"全國（服務業）", regionKey:"nationwide", needs:["rd"], maxWan:1000,
+      amount:"個別創新 150 萬（運動服務 200 萬）、合作創新 500 萬（運動 700 萬）、國際化進階個別 500 萬／合作 1,000 萬（運動 600 萬／1,200 萬）",
+      elig:"國內公司或商業（服務業），非拒絕往來戶、非陸資，補助款 ≤ 自籌款 ≤ 實收資本額",
+      accept:"年度梯次（115 年第二梯次 115/7/1–116/4/30），線上申請",
+      docs:["線上計畫申請書","公司登記證明","財務報表","切結書","聯盟協議書（合作創新類）"],
+      url:"https://startup.sme.gov.tw/home/upload/downloads/20251219110015smd.pdf", urlText:"SIIR 申請須知（PDF）",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.industry === "manufacturing" || p.industry === "agriculture") no.push("SIIR 僅補助服務業，你的產業別不在範圍內");
+        else ok.push("屬服務業範疇，符合計畫產業範圍");
+        if(p.type === "sole") no.push("須為國內依法設立之公司或商業（獨資／合夥型態請對照最新須知確認）");
+        var cn = capitalNote(p, 150); if(cn) ok.push(cn);
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a03", name:"CITD 協助傳統產業技術開發計畫", agency:"經濟部產業發展署",
+      region:"全國（製造業／技術服務業）", regionKey:"nationwide", needs:["rd"], maxWan:1000,
+      amount:"產品開發個別 200 萬；研發聯盟 1,000 萬（主導 500 萬、成員每家 200 萬）；不逾 50%，期程 8 個月",
+      elig:"製造業須工廠登記，淨值為正、非陸資",
+      accept:"批次受理（每年至少 1 梯次），線上申請",
+      docs:["申請書","個資同意書","利益衝突揭露表","會計師財簽報告（或營所稅申報書）","聯盟協議書及非關係人切結書（聯盟類）"],
+      url:"https://assist.nat.gov.tw/wSite/DownloadFile?type=attach&file=f1768544877973.pdf&realname=115%E5%B9%B4%E5%8D%94%E5%8A%A9%E5%82%B3%E7%B5%B1%E7%94%A2%E6%A5%AD%E6%8A%80%E8%A1%93%E9%96%8B%E7%99%BC%E8%A8%88%E7%95%AB(CITD)%E6%87%B6%E4%BA%BA%E5%8C%85.pdf", urlText:"115 年 CITD 懶人包（PDF）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.industry === "manufacturing"){ ok.push("屬製造業，符合計畫對象"); special = true; ok.push("另須具工廠登記且公司淨值為正，工具無法判定"); }
+        else if(p.industry === "software"){ ok.push("技術服務業在適用範圍內"); special = true; ok.push("技術服務業資格範圍與淨值條件須對照官方資格確認"); }
+        else no.push("CITD 對象為製造業或技術服務業，你的產業不在範圍內");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a04", name:"TIIP 產業升級創新平台輔導計畫", agency:"經濟部產業發展署",
+      region:"全國", regionKey:"nationwide", needs:["rd"], maxWan:null,
+      amount:"不逾總經費 50%（產業高值 40–50%，創新優化／新興育成上限 40%），每案上限官方未明載，依審查核定",
+      elig:"依法登記事業／公司，淨值為正、非陸資",
+      accept:"自訂項目隨到隨審；主題式批次受理",
+      docs:["計畫申請書與研發計畫書","公司登記證明","最近年度財務報表","無欠稅及非拒絕往來聲明","經費編列表"],
+      url:"https://assist.nat.gov.tw/GIP/wSite/DownloadFile?type=attach&file=f1772003885651.pdf&realname=115%E5%B9%B4%E7%94%A2%E6%A5%AD%E5%8D%87%E7%B4%9A%E5%89%B5%E6%96%B0%E5%B9%B3%E5%8F%B0%E8%BC%94%E5%B0%8E%E8%A8%88%E7%95%AB%E6%87%B6%E4%BA%BA%E5%8C%85.pdf", urlText:"115 年 TIIP 懶人包（PDF）",
+      check:function(p){
+        var ok=[], no=[];
+        ok.push("依法登記之事業／公司可申請，規模不限");
+        ok.push("提醒：公司淨值須為正、非陸資，送件前請自行確認");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a05", name:"研發轉型支持個案補助（韌性特別條例）", agency:"經濟部產業發展署",
+      region:"全國（製造業）", regionKey:"nationwide", needs:["rd"], maxWan:4000,
+      amount:"個案 500 萬、產業聯盟 4,000 萬；納管／特定工廠版 300 萬；不逾 50%，設備費不逾總經費 40%",
+      elig:"製造業＋工廠登記＋中小企業＋受國際經貿情勢影響",
+      accept:"全年滾動受理至經費用罄，線上申請",
+      docs:["線上申請書與研發轉型計畫書","工廠登記證明","公司或商業登記證明","財務報表","受國際情勢影響說明"],
+      url:"https://www.moea.gov.tw/mns/populace/news/wHandNews_File.ashx?file_id=126262", urlText:"經濟部公告（韌性特別條例補助）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.industry !== "manufacturing") no.push("限製造業，你的產業不在範圍內");
+        else {
+          if(isSME(p)) ok.push("屬製造業且符合中小企業規模"); else no.push("限中小企業（資本額逾 1 億元且員工 200 人以上）");
+          special = true; ok.push("另須具工廠登記且受國際經貿情勢影響，工具無法判定");
+        }
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a06", name:"AI 轉型輔導支持（產業競爭力輔導團）", agency:"經濟部產業發展署",
+      region:"全國（製造業）", regionKey:"nationwide", needs:["digital","training"], maxWan:42,
+      amount:"每家最高 42 萬元（輔導經費 19 萬＋AI 導入補助最高 10 萬＋人才培訓 12 萬選配＋業者自籌 1 萬）",
+      elig:"受國際經貿情勢影響之製造業（中小企業為主），AI 工具須為核定清單",
+      accept:"透過輔導團申請，至 116/9/30 或經費用罄",
+      docs:["輔導申請表","AI 成熟度／需求診斷資料","工具採購發票","授權證明","撥款帳戶資料"],
+      url:"https://www.moea.gov.tw/mns/populace/news/wHandNews_File.ashx?file_id=126262", urlText:"經濟部公告（產業競爭力輔導團）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.industry !== "manufacturing") no.push("限製造業，你的產業不在範圍內");
+        else { ok.push("屬製造業，符合計畫對象"); special = true; ok.push("另須受國際經貿情勢影響且 AI 工具屬核定清單，工具無法判定"); }
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a07", name:"雲市集工業館 AI 工具庫點數補助", agency:"經濟部產業發展署",
+      region:"全國（製造業）", regionKey:"nationwide", needs:["digital"], maxWan:15,
+      amount:"最高 15 萬點（1 點＝1 元），折抵至多 1/2 服務費",
+      elig:"中小型製造業者，資本額 1 億元以下或員工未滿 200 人，須工廠登記（或免辦證明），非陸資，曾獲補助者不得重複",
+      accept:"至 115/10/30 17:30，點數用罄即停，線上申請",
+      docs:["線上計畫申請表","個資同意書","聲明書","利益衝突揭露表","工廠登記（或免辦證明）","切結書"],
+      url:"https://www.ida.gov.tw/ctlr?PRO=filepath.DownloadFile&f=executive&t=f&id=20527", urlText:"產業發展署 115 年申請須知（PDF）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.industry !== "manufacturing") no.push("限中小型製造業，你的產業不在範圍內");
+        else if(!isSME(p)) no.push("限中小型製造業者（資本額 1 億元以下或員工未滿 200 人）");
+        else { ok.push("屬中小型製造業，符合規模資格"); special = true; ok.push("另須工廠登記（或免辦證明）且未曾獲本補助，工具無法判定"); }
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a08", name:"商業服務業韌性計畫－個案補助（單店導入）", agency:"經濟部商業發展署",
+      region:"全國（商業服務業）", regionKey:"nationwide", needs:["digital"], maxWan:10,
+      amount:"方案總額 50%，每店上限 10 萬元，一生限一次",
+      elig:"已辦公司／商業／有限合夥／稅籍登記且營業正常之商業服務業，非陸資，受國際經貿局勢影響，方案須為智慧轉型專區公告之 AI 方案",
+      accept:"115/4/20–116/10/20，線上申請滾動審查",
+      docs:["補助申請書","國際經貿局勢影響聲明書","AI 成熟度評估量表","撥款帳戶資料","請款附發票及 3 個月使用紀錄"],
+      url:"https://www.aoc.gov.tw/showPublicAttach/458", urlText:"商業發展署公告附件",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(!isService(p)) no.push("限商業服務業，你的產業不在範圍內");
+        else { ok.push("屬商業服務業，符合計畫對象"); special = true; ok.push("另須受國際經貿局勢影響且導入方案屬智慧轉型專區公告之 AI 方案，工具無法判定"); }
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a09", name:"商業服務業韌性計畫－輔導型", agency:"經濟部商業發展署",
+      region:"全國", regionKey:"nationwide", needs:["digital"], maxWan:null,
+      amount:"金額依審查核定（官方未明載固定上限）",
+      elig:"提案業者（AI 服務商／輔導單位）須帶動 20–50 家店家導入 AI 工具",
+      accept:"依公告梯次受理",
+      docs:["提案計畫書","預定受輔導店家清冊","AI 工具使用 3 個月以上流量證明","教育訓練證明","AI 成熟度評估量表"],
+      url:"https://www.aoc.gov.tw/showPublicAttach/458", urlText:"商業發展署公告附件",
+      check:function(p){
+        var ok=[], no=[], special=true;
+        if(p.industry === "software") ok.push("屬軟體資訊業，接近 AI 服務商／輔導單位定位");
+        else ok.push("本計畫對象為提案的 AI 服務商／輔導單位，非一般受輔導店家");
+        ok.push("須能帶動 20–50 家店家導入 AI 工具，工具無法判定");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a10", name:"商業服務業數據驅動價值創造計畫", agency:"經濟部商業發展署",
+      region:"全國（商業服務業）", regionKey:"nationwide", needs:["digital"], maxWan:600,
+      amount:"輔導款上限 600 萬元，不逾總經費 50%，須導入 2 項以上 AI 技術／工具",
+      elig:"批發、零售、物流、餐飲、休憩及生活服務業，具備數位化能力",
+      accept:"依 115 年度公告梯次",
+      docs:["計畫申請書與提案計畫書","公司登記證明","財務報表","數位化能力與數據應用規劃說明"],
+      url:"https://assist.nat.gov.tw/wSite/DownloadFile?type=attach&file=f1771998242783.pdf&realname=115%E5%B9%B4%E5%95%86%E6%A5%AD%E6%9C%8D%E5%8B%99%E6%A5%AD%E6%95%B8%E6%93%9A%E9%A9%85%E5%80%BC%E5%89%B5%E9%80%A0%E8%A8%88%E7%95%AB%E6%87%B6%E4%BA%BA%E5%8C%85.pdf", urlText:"115 年商業服務業數據驅動價值創造計畫懶人包（PDF）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(isService(p)){ ok.push("屬批發、零售、餐飲、休憩或生活服務業範疇"); special = true; ok.push("另須具備數位化能力並導入 2 項以上 AI 技術／工具，工具無法判定"); }
+        else no.push("限批發、零售、物流、餐飲、休憩及生活服務業，你的產業不在範圍內");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a11", name:"A+ 企業創新研發淬鍊計畫", agency:"經濟部產業技術司",
+      region:"全國", regionKey:"nationwide", needs:["rd"], maxWan:null,
+      amount:"補助比例最高不逾臺方總經費 50%（GRP 40–50%），各子計畫上限依徵案公告",
+      elig:"國內依法註冊、財務健全之企業，規模不限；GRP 須與國外企業／法人共同提案",
+      accept:"依各子計畫徵案公告分梯次",
+      docs:["A+ 申請表","中文計畫書","英文版共同提案書（國合案）","聯盟協議書","公司財務報表"],
+      url:"https://aiip.tdp.org.tw/", urlText:"A+ 企業創新研發淬鍊計畫網站",
+      check:function(p){
+        var ok=[], no=[];
+        ok.push("國內依法註冊、財務健全之企業可申請，規模不限");
+        ok.push("提醒：GRP 國際合作案須與國外企業／法人共同提案");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a12", name:"產創條例第 10 條 研發投資抵減", agency:"經濟部產業發展署／財政部",
+      region:"全國", regionKey:"nationwide", needs:["tax","rd"], maxWan:null,
+      amount:"研發支出 15% 抵減當年度營所稅，或 10% 分 3 年抵減",
+      elig:"公司或有限合夥從事研發活動，近 3 年無重大違反環保／勞工／食安法令",
+      accept:"隨營所稅結算申報，申報前申請研發活動認定",
+      docs:["投資抵減申請書","研發活動說明與佐證","研發支出明細與憑證","營所稅結算申報書"],
+      url:"https://law.moj.gov.tw/ENG/LawClass/LawParaDeatil.aspx?pcode=J0040051&bp=3", urlText:"產業創新條例（全國法規資料庫）",
+      check:function(p){
+        var ok=[], no=[];
+        if(isCompanyOrLP(p)) ok.push("公司或有限合夥型態，符合適用主體"); else no.push("限公司或有限合夥，你的公司型態不在範圍內");
+        ok.push("提醒：近 3 年不得有重大違反環保、勞工、食安法令紀錄");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a13", name:"產創條例第 10 條之 1 投資抵減（智慧機械／5G／資安／AI／節能減碳）", agency:"經濟部產業發展署／財政部",
+      region:"全國", regionKey:"nationwide", needs:["tax","digital","energy"], maxWan:null,
+      amount:"支出 100 萬–20 億元：5% 抵減當年度稅額或 3% 分 3 年，每年抵減不逾應納稅額 30%；適用至 2029/12/31",
+      elig:"公司或有限合夥投資全新智慧機械、5G、資安、AI、節能減碳軟硬體／技術供自用",
+      accept:"須先提投資計畫核准，隨營所稅申報",
+      docs:["投資計畫書","採購契約與發票","交貨或服務提供證明","營所稅結算申報書"],
+      url:"https://law.moj.gov.tw/ENG/LawClass/LawParaDeatil.aspx?pcode=J0040051&bp=3", urlText:"產業創新條例（全國法規資料庫）",
+      check:function(p){
+        var ok=[], no=[];
+        if(isCompanyOrLP(p)) ok.push("公司或有限合夥型態，符合適用主體"); else no.push("限公司或有限合夥，你的公司型態不在範圍內");
+        ok.push("提醒：投資支出須達 100 萬元以上且為全新設備／技術供自用");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a14", name:"產創條例第 10 條之 2 前瞻研發及先進製程設備投資抵減（台版晶片法）", agency:"經濟部產業發展署／財政部",
+      region:"全國（大型企業）", regionKey:"nationwide", needs:["tax","rd"], maxWan:null,
+      amount:"研發支出 25% 抵減（不逾稅額 30%）、先進製程設備支出 5% 抵減，合計不逾稅額 50%；適用至 2029/12/31",
+      elig:"門檻：研發費用 60 億元以上、占營收淨額 6% 以上、有效稅率 15% 以上；設備抵減另須設備支出 100 億元以上",
+      accept:"每課稅年度一次，隨營所稅申報",
+      docs:["投資計畫","研發支出明細與會計師簽證資料","設備採購憑證","有效稅率計算資料"],
+      url:"https://law.moj.gov.tw/ENG/LawClass/LawParaDeatil.aspx?pcode=J0040051&bp=3", urlText:"產業創新條例（全國法規資料庫）",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.revenue < 1000000) no.push("門檻為研發費用 60 億元以上且占營收淨額 6% 以上——以你目前營收規模 " + p.revenue.toLocaleString() + " 萬元推估，研發費用不可能達到 60 億元門檻");
+        else { ok.push("營收規模達千億元等級，是否達門檻須逐項核算"); }
+        return {ok:ok, no:no, special: p.revenue >= 1000000};
+      }
+    },
+    {
+      id:"a15", name:"僱用獎助措施", agency:"勞動部勞動力發展署",
+      region:"全國", regionKey:"nationwide", needs:["hire"], maxWan:15.6,
+      amount:"每人每月 9,000–13,000 元（非按月計酬每小時 50–70 元），最長 12 個月；中高齡專法高齡者每月最高 15,000 元",
+      elig:"雇主為就保投保單位之民營事業／團體／私校；勞工須經公立就服機構推介（失業 30 日以上特定對象或失業 3 個月以上），僱用滿 30 日",
+      accept:"常年受理（僱用滿 30 日起 90 日內首申請）",
+      docs:["僱用獎助申請書","僱用名冊／薪資清冊／出勤紀錄","勞工身分證明影本","勞保／就保證明"],
+      url:"https://tkyhkm.wda.gov.tw/News_Content.aspx?n=AA9409D48C1AD221&sms=E394A8E24A21A421&s=745127AC0E5C0036", urlText:"勞動力發展署僱用獎助說明",
+      check:function(p){
+        var ok=[], no=[];
+        ok.push("民營事業單位且為就業保險投保單位即可適用，不限產業與規模");
+        ok.push("提醒：受僱者須先經公立就服機構推介再僱用，自行錄用者不算；僱用滿 30 日起 90 日內提出首次申請");
+        if(p.identity === "midage-unemployed") ok.push("你具失業中高齡身分背景，僱用同類對象時可留意中高齡專法獎勵（每月最高 15,000 元）");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a16", name:"企業人力資源提升計畫（大人提）", agency:"勞動部勞動力發展署",
+      region:"全國", regionKey:"nationwide", needs:["training"], maxWan:200,
+      amount:"個別型 95 萬、聯合型 190 萬、產業推升型 200 萬；外部訓練補助收費 50%（政策性課程／青年／中高齡派訓 70%），每員工不逾 2 萬元",
+      elig:"民營事業／非營利法人；就保勞工 51 人以上，或未滿 51 人具 TTQS 通過等資格",
+      accept:"每年 12/1–12/31 受理下一年度",
+      docs:["申請表","全年度訓練計畫及經費概算總表","訓練計畫規劃說明","設立登記證明","最近一期勞保繳款單及明細","納稅或無欠稅證明"],
+      url:"https://course.taiwanjobs.gov.tw/Content/Uploads/Folksonomy/ec3beb5a-be26-49ed-ba14-a4e479d1ced3/b8e60387-ff0d-4d9b-9cda-a8332703c983.pdf", urlText:"大人提申請文件（PDF）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.employees >= 51) ok.push("就保勞工 51 人以上，符合大人提基本資格");
+        else { ok.push("就保勞工未滿 51 人"); special = true; ok.push("未滿 51 人須另具 TTQS 通過等資格，工具無法判定——可先走小人提累積資格"); }
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a17", name:"小型企業人力提升技能培訓計畫（小人提）", agency:"勞動部勞動力發展署",
+      region:"全國", regionKey:"nationwide", needs:["training"], maxWan:null,
+      amount:"金額與成數官方未明載（分署提供訓練輔導服務及課程）",
+      elig:"就保受僱勞工 50 人以下之小型事業單位",
+      accept:"以當年度各分署公告為準",
+      docs:["官方未明載，申請前向轄區分署核實"],
+      url:"https://course.taiwanjobs.gov.tw/", urlText:"台灣就業通（訓練課程專區）",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.employees <= 50) ok.push("就保受僱勞工 50 人以下，符合小人提資格"); else no.push("就保受僱勞工逾 50 人，請改看大人提");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a18", name:"青年就業旗艦計畫", agency:"勞動部勞動力發展署",
+      region:"全國", regionKey:"nationwide", needs:["hire","training"], maxWan:54,
+      amount:"工作崗位訓練費前 3 個月每人每月上限 12,000 元、第 4–6 個月 6,000 元；每人最高 36,000 元（月薪未達 34,000 元）或 54,000 元（達 34,000 元）",
+      elig:"訓練單位為就保投保單位之民營事業／團體／學校；青年 15–29 歲缺乏工作經驗或技能（日間部在學學生除外）；申請人數不逾僱用人數 25%",
+      accept:"全年度受理，經費用罄即止",
+      docs:["申請表件檢核表","申請表","訓練計畫書","合法登記證明","勞保投保人數證明","職場導師資格證明"],
+      url:"https://course.taiwanjobs.gov.tw/news/information?type=1&&subClassid=b298d349-4e9f-42a4-9ca6-ecdd8cc005b9", urlText:"台灣就業通——青年就業旗艦計畫",
+      check:function(p){
+        var ok=[], no=[];
+        ok.push("民營事業單位（就保投保單位）可申請，不限產業與規模");
+        ok.push("提醒：青年須為 15–29 歲、缺工作經驗或技能，且不得為日間部在學學生；申請人數不逾僱用人數 25%");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a19", name:"企業托育補助（哺集乳室與托兒設施措施）", agency:"勞動部",
+      region:"全國", regionKey:"nationwide", needs:["childcare"], maxWan:500,
+      amount:"哺集乳室最高 2 萬元；托兒設施新建最高 500 萬元、已設置每年最高 100 萬元；職場居家式托育每年最高 100 萬元；育兒補貼每年最高 100 萬元（每員工每年最高 1 萬元）",
+      elig:"雇主（事業單位）不論規模；收托受僱者未滿 12 歲子女；新制 2026/5/1 生效",
+      accept:"每年 2 期（1–2 月、5/1–6/15），線上申請",
+      docs:["申請書","實施計畫","受僱者子女托兒名冊","托兒機構設立許可證書影本","人事費申請者附人員名冊及薪資清冊"],
+      url:"https://www.mol.gov.tw/1607/1632/1633/90233/", urlText:"勞動部——企業托育補助說明",
+      check:function(p){
+        var ok=[], no=[];
+        ok.push("雇主（事業單位）不論規模皆可申請");
+        ok.push("提醒：收托對象為受僱者未滿 12 歲子女；新制自 2026/5/1 生效");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a20", name:"流行音樂產業行銷推廣補助", agency:"文化部影視及流行音樂產業局",
+      region:"全國（流行音樂產業）", regionKey:"nationwide", needs:["marketing"], maxWan:1200, closed:true,
+      amount:"不逾核定總經費 49%；第一類國際行銷 320 萬／國內 150 萬；第二類一般組 600 萬／國際品牌旗艦組 1,200 萬元；每年每類至多 1 件",
+      elig:"依法設立登記、從事流行音樂製作／發行／行銷／有聲出版／經紀／展演之法人或商號",
+      accept:"年度梯次（115 年度已結束）",
+      docs:["申請表","設立登記證明","最近二年無欠稅證明","最近一年無退票紀錄證明","企畫書及切結書","利益衝突揭露表"],
+      url:"https://file.moc.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvNTEwL3JlbGZpbGUvMTI5NDkvMjQ5MjUwL2FkYTgyMzk4LWM1NjgtNDUwNy1iNTkwLTE2MjYyMDBlZGRkMS5wZGY%3d&n=MTE15bm05rWB6KGM6Z%2bz5qiC55Si5qWt6KGM6Z%2bz5qiC55Si5qWt6KGM6Z%2bz5qiC55Si5qWt6KGM6Z", urlText:"流行音樂行銷推廣補助須知（PDF）",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.industry === "music") ok.push("屬流行音樂產業，符合計畫產業範圍"); else no.push("限流行音樂產業（製作／發行／行銷／有聲出版／經紀／展演），你的產業不在範圍內");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a21", name:"前期開發支持計畫（內容開發）", agency:"文化內容策進院",
+      region:"全國（影視內容）", regionKey:"nationwide", needs:["rd"], maxWan:300,
+      amount:"電影長片／影集上限 200 萬元（不逾總預算 5%）；紀錄片 200 萬元（不逾 10%）；動畫 300 萬元（不逾 15%）；進入製作階段後金額計入製作投資款，文策院有優先投資權",
+      elig:"須經 TCCF／金馬創投／台北電影節／高雄電影節／紀錄片影展入選獲獎，或文策院專案／策略夥伴推薦；原創或改編劇本含臺灣元素",
+      accept:"依入選／推薦資格年限內提出",
+      docs:["企畫書","作業要點應備文件","授權書與聲明書","著作權證明"],
+      url:"https://taicca.tw/funds/support_plan/detail/1", urlText:"文策院——前期開發支持計畫",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.industry !== "culture") no.push("限影視內容開發，你的產業不在範圍內");
+        else { ok.push("屬文創影視範疇"); special = true; ok.push("另須經 TCCF／金馬創投／影展入選獲獎或文策院推薦，工具無法判定"); }
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a22", name:"文化黑潮 T-Comics 臺灣中長篇漫畫產製徵案", agency:"文化部人文及出版司",
+      region:"全國（漫畫出版）", regionKey:"nationwide", needs:["rd"], maxWan:700,
+      amount:"每案最高 700 萬元（含稅），成數官方未明載",
+      elig:"依法設立登記或立案之法人／團體；作品全新創作或新集數、未曾國內公開發表、使用國家語言；紙本 3–5 集每集 150 頁以上或數位 450–750 頁／條漫 130 回以上；全 AI 生成作品不予支持",
+      accept:"原則每半年收件一次",
+      docs:["申請表","計畫書","公司登記／立案證明及章程","無欠稅／無退票證明","原創及未重複補助切結書"],
+      url:"https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg031183/ch05/type2/gov46/num12/Eg.pdf", urlText:"文化黑潮 T-Comics 徵案公告（PDF）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.industry === "culture"){ ok.push("屬文創範疇，可就漫畫產製提案"); special = true; ok.push("作品規格（集數／頁數／未公開發表）須逐項對照官方資格確認"); }
+        else no.push("限漫畫出版產製，你的產業不在範圍內");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a23", name:"臺灣雲市集數位點數補助（一般版）", agency:"數位發展部數位產業署",
+      region:"全國（中小微企業）", regionKey:"nationwide", needs:["digital"], maxWan:3,
+      amount:"補助 50%，點數上限 3 萬點（最高 3 萬元）",
+      elig:"符合資格之中小微企業／組織選購平臺上架雲端方案；115 年度細部資格官方未明載",
+      accept:"平臺線上申請",
+      docs:["工商憑證驗證","公司基本資料","授權資料查詢同意","數位需求自評表"],
+      url:"https://moda.gov.tw/press/press-releases/9665.html", urlText:"數位發展部新聞稿——臺灣雲市集",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(isSME(p)) ok.push("符合中小微企業規模"); else no.push("限中小微企業（資本額逾 1 億元且員工 200 人以上）");
+        special = true; ok.push("115 年度細部資格官方未明載，申請前請對照平臺公告確認");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a24", name:"DIGITAL+ 數位服務創新補助", agency:"數位發展部數位產業署",
+      region:"全國（軟體資訊業）", regionKey:"nationwide", needs:["digital","rd"], maxWan:1500, closed:true,
+      amount:"每案上限 1,500 萬元，不逾總經費 50%",
+      elig:"依法登記事業，行業限 J582 軟體出版／J62 電腦程式設計諮詢／J63 資訊服務，淨值為正、非陸資、非外國在臺分公司，每企業限 1 案，資安經費須占總經費 7% 以上",
+      accept:"年度梯次（115 年度至 2026/5/18 已截止），線上申請",
+      docs:["申請表暨企業聲明／同意書","計畫書","近 3 年會計師簽證財報或營所稅申報書","個資同意書","利益衝突揭露表","審查簡報"],
+      url:"https://digiplus.adi.gov.tw", urlText:"DIGITAL+ 計畫網站",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.industry === "software") ok.push("屬軟體資訊業，符合行業範圍（J582／J62／J63）"); else no.push("限軟體資訊業（J582／J62／J63），你的產業不在範圍內");
+        ok.push("提醒：淨值須為正、每企業限 1 案，資安經費須占總經費 7% 以上");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a25", name:"DIGITAL+ AI 創新服務研發補助", agency:"數位發展部數位產業署",
+      region:"全國（軟體資訊業）", regionKey:"nationwide", needs:["digital","rd"], maxWan:2000,
+      amount:"AI 創新應用服務上限 500 萬元；AI Agent 整合服務上限 2,000 萬元",
+      elig:"資格同 DIGITAL+（J582／J62／J63、淨值正、非陸資），每企業限擇 1 類別 1 案，須建置資安防禦機制並完成企業資安評級",
+      accept:"年度梯次，線上申請",
+      docs:["申請表暨企業聲明／同意書","計畫書","近 3 年財報","個資同意書","利益衝突揭露表","簡報"],
+      url:"https://digiplus.adi.gov.tw", urlText:"DIGITAL+ 計畫網站",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.industry === "software") ok.push("屬軟體資訊業，符合行業範圍（J582／J62／J63）"); else no.push("限軟體資訊業（J582／J62／J63），你的產業不在範圍內");
+        ok.push("提醒：須建置資安防禦機制並完成企業資安評級，每企業限擇 1 類別 1 案");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a26", name:"農業產業創新活動補助（業界科專）", agency:"農業部",
+      region:"全國（農業企業）", regionKey:"nationwide", needs:["rd"], maxWan:null,
+      amount:"不逾全案總經費 50%，單案上限官方未明載，由各計畫公告核定",
+      elig:"依法登記事業／公司，淨值為正、非拒絕往來戶，場所須合法登記，進駐農業科技園區或育成中心者優先",
+      accept:"依各計畫公告（年度梯次）",
+      docs:["申請書","計畫書","聲明書","公司登記證明","場所合法登記證明"],
+      url:"https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=M0080012", urlText:"農業科技產學合作計畫補助相關法規（全國法規資料庫）",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.industry === "agriculture") ok.push("屬農業企業，符合計畫對象"); else no.push("限農業企業，你的產業不在範圍內");
+        ok.push("提醒：淨值須為正、場所須合法登記");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a27", name:"農村社區企業經營輔導計畫", agency:"農業部農村發展及水土保持署",
+      region:"農村社區", regionKey:"rural", needs:["rd"], maxWan:300,
+      amount:"每企業上限 300 萬元、期程 2 年，各科目不逾 50%；計畫結束翌年起 5 年每年按營所稅淨值 5% 提撥農村再生基金（累計以補助總額 1/2 為原則）",
+      elig:"依法登記公司／合作社／獨資／合夥，經營項目與農村社區產業相關，企業登記於已參與農村再生培根計畫之社區且負責人或股東之一設籍該社區",
+      accept:"年度梯次（現行年度以最新公告為準）",
+      docs:["申請書及經營計畫書","負責人信用證明","設籍社區身分證明","稅籍及商業／設立登記文件","歷年營所稅申報書及無違規切結書"],
+      url:"https://law.moa.gov.tw/LawContentHistory.aspx?hid=2639&id=GL000763", urlText:"農村社區企業經營輔導相關規定（農業部法規）",
+      check:function(p){
+        var ok=[], no=[], special=true;
+        ok.push("依法登記之公司／合作社／獨資／合夥可申請");
+        ok.push("須企業登記於已參與農村再生培根計畫之社區，且負責人或股東之一設籍該社區，工具無法判定");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a28", name:"原住民族創新成長計畫", agency:"原住民族委員會",
+      region:"全國（原民企業）", regionKey:"nationwide", needs:["rd"], maxWan:300, closed:true,
+      amount:"事業成長類 120 萬元；綠色創新類 300 萬元；資本門須占補助款 60% 以上，自籌至少占補助款 30%",
+      elig:"公司負責人須為原住民；非獨資者原住民股份或股東人數 80% 以上，或原住民員工達 50% 以上；負責人為原住民之商號亦可",
+      accept:"年度梯次線上申請（115 年度至 2026/3/16 已截止）",
+      docs:["線上申請表","推動計畫書","立案證明／最新公司變更登記表","勞健保投保資料","聲明書及個資同意書"],
+      url:"https://startup.cip.gov.tw/project/2026/", urlText:"原民會創業計畫網站（115 年度）",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.identity === "indigenous") ok.push("負責人具原住民身分，符合計畫核心資格"); else no.push("公司負責人須為原住民——你目前的特殊身分未符合");
+        ok.push("提醒：非獨資者另須原住民股份或股東人數 80% 以上，或原住民員工達 50% 以上");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a29", name:"原住民族創業共好計畫（116 年度）", agency:"原住民族委員會",
+      region:"全國（原民企業）", regionKey:"nationwide", needs:["rd"], maxWan:50,
+      amount:"上限 50 萬元；資本門須占 30% 以上，自籌至少占補助款 12%",
+      elig:"資格同創新成長計畫；116 年度限 111–115 年成立者（5 年內優先）",
+      accept:"年度梯次線上申請，116 年度至 2026/12/10 截止",
+      docs:["線上申請表","推動計畫書","個資同意書","聲明書","公司立案證明＋最新變更登記表","勞健保資料"],
+      url:"https://startup.cip.gov.tw/post/contents/69", urlText:"原民會創業共好計畫公告",
+      check:function(p){
+        var ok=[], no=[];
+        if(p.identity === "indigenous") ok.push("負責人具原住民身分，符合計畫核心資格"); else no.push("負責人須為原住民（資格同創新成長計畫）——你目前的特殊身分未符合");
+        if(p.years <= 5) ok.push("成立 5 年內，符合 116 年度對象（111–115 年成立者）"); else no.push("116 年度限 111–115 年成立者，你的公司成立已逾 5 年");
+        return {ok:ok, no:no};
+      }
+    },
+    {
+      id:"a30", name:"客家產業創新補助", agency:"客家委員會",
+      region:"全國（客家產業）", regionKey:"nationwide", needs:["rd"], maxWan:null,
+      amount:"金額上限及比率官方未明載，由各次公告及補助契約核定",
+      elig:"依法登記之獨資／合夥／有限合夥／公司，產業須具客家文化主體性，須具研發場所、基本人力設備及完備管理制度",
+      accept:"公告期間內提出（年度梯次）",
+      docs:["計畫書","聲明書","企業登記證明","研發場所及管理制度證明"],
+      url:"https://law.hakka.gov.tw/Download.ashx?FileID=722&id=GL000002&type=LAW", urlText:"客家委員會補助規定（PDF）",
+      check:function(p){
+        var ok=[], no=[], special=false;
+        if(p.identity === "hakka") ok.push("位於客家文化重點發展區，與計畫的客家文化主體性方向相符");
+        else { special = true; ok.push("產業是否具客家文化主體性，工具無法判定"); }
+        ok.push("提醒：另須具研發場所、基本人力設備及完備管理制度");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"b01", name:"臺北市研發補助／品牌建立補助", agency:"臺北市政府產業發展局",
+      region:"臺北市", regionKey:"taipei", needs:["rd"], maxWan:500,
+      amount:"不逾總經費 50%，最高 500 萬元，每計畫限補助一次",
+      elig:"臺北市登記之公司、商業或外國公司，從事技術開發／創新服務研發／品牌建立，同一計畫未獲其他政府補助",
+      accept:"計畫執行前 1 日至前 6 個月期間內申請",
+      docs:["申請書","研發（或品牌建立）計畫書","登記及變更證明","最近一年營所稅與營業稅申報書（未滿一年免營所稅）","違章欠稅查復表","勞保證明"],
+      url:"https://english.gov.taipei/News_Content.aspx?n=755F4B5A4BB08CAE&sms=5B794C46F3CDE718&s=25C919C9A3B589EE", urlText:"臺北市產業發展局——研發補助官方說明",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "taipei", "臺北市", ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b02", name:"臺北市創業補助", agency:"臺北市政府產業發展局",
+      region:"臺北市", regionKey:"taipei", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%，最高 100 萬元，限補助一次",
+      elig:"臺北市登記之公司、商業或外國公司，具創新／創意／加值潛力之創業計畫",
+      accept:"新投資創立登記次日起 1 年內申請",
+      docs:["申請書","創業計畫書","公司登記證明","最近一年營所稅與營業稅申報書","違章欠稅查復表"],
+      url:"https://www.laws.taipei.gov.tw/LawPropose/FileDownload/DownloadProposalFile?pid=15055&fileName=%E4%BF%8D%E6%AD%A3%E8%87%BA%E5%8C%97%E5%B8%82%E7%94%A2%E6%A5%AD%E7%99%BC%E5%B1%95%E8%87%AA%E6%B2%BB%E6%A2%9D%E4%BE%8B%E9%83%A8%E5%88%86%E6%A2%9D%E6%96%87%E5%85%A7%E5%AE%B9(%E5%85%AC%E5%B8%83%E7%89%88).pdf", urlText:"臺北市產業發展自治條例（臺北市法規 PDF）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "taipei", "臺北市", ok, no); ok.push("創業計畫須具創新／創意／加值潛力，經審查認定，工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b03", name:"臺北市創新育成補助", agency:"臺北市政府產業發展局",
+      region:"臺北市", regionKey:"taipei", needs:["rd"], maxWan:300,
+      amount:"最高 300 萬元，限補助一次",
+      elig:"臺北市登記之公司／商業／外國公司，或立案學校、主事務所設於臺北市之財團／社團法人，辦理創新育成計畫",
+      accept:"計畫執行前 1 日至前 6 個月期間內申請",
+      docs:["申請書","創新育成計畫書 5 份及電子檔","設立登記或變更證明 5 份","最近一年營所稅與營業稅申報書","最近一個月違章欠稅查復表"],
+      url:"https://www.laws.taipei.gov.tw/law/LawSearch/LawExport/FL079817?type=0&date=20150622", urlText:"臺北市產業發展自治條例相關規定（臺北市法規）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "taipei", "臺北市", ok, no); ok.push("提醒：須辦理創新育成計畫（育成中心／加速器型態）"); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b04", name:"臺北市獎勵補貼（投資獎勵）", agency:"臺北市政府產業發展局",
+      region:"臺北市", regionKey:"taipei", needs:["tax","training"], maxWan:5000,
+      amount:"勞工職訓費／薪資、房屋稅、地價稅、融資利息、租金等補貼；重大投資案合計上限 5,000 萬元，單項上限官方未明載",
+      elig:"臺北市登記之公司／商業／外國公司：中小企業投資創新相關設備或技術 100 萬元以上，或一次增資 8,000 萬元以上且屬觀光／生技／資訊／電信／文創／醫療／運動／會展／再生能源等產業",
+      accept:"新投資創立或增資登記次日起 1 年內申請",
+      docs:["申請書","獎勵補貼計畫書 5 份及電子檔","新設立或增資證明","購置設備或技術之發票或證明","最近三年會計師簽證財報","最近一年營所稅與營業稅申報書","違章欠稅查復表"],
+      url:"https://laws.gov.taipei/Law/LawSearch/LawExport/FL079818?type=0&date=20150626", urlText:"臺北市產業發展自治條例獎勵補貼規定（臺北市法規）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "taipei", "臺北市", ok, no); ok.push("投資門檻（創新設備／技術 100 萬元以上，或一次增資 8,000 萬元以上且屬指定產業）工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b05", name:"臺北市新創拔尖補助", agency:"臺北市政府產業發展局",
+      region:"臺北市", regionKey:"taipei", needs:["rd"], maxWan:1500,
+      amount:"三階段（研發／加速／品牌）合計最高 1,500 萬元，另 AI 算力服務價值 30 萬元",
+      elig:"設立臺北市 1–8 年新創，最近 3 年累計獲投資 500 萬元以上（112/8/15 後注資），須投資者推薦，領域限資通訊軟硬體／生技醫療",
+      accept:"受理至 115/9/30，預計徵選 3 案",
+      docs:["計畫書（含三階段）","投資者推薦文件","公司設立登記證明","獲投資證明"],
+      url:"https://www.gov.taipei/News_Content.aspx?n=F0DDAF49B89E9413&sms=72544237BBE4C5F6&s=558608761E3F3FE8", urlText:"臺北市政府——新創拔尖補助公告",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "taipei", "臺北市", ok, no);
+        if(p.years >= 1 && p.years <= 8) ok.push("設立 1–8 年，符合新創年資範圍"); else no.push("限設立 1–8 年新創，你目前成立 " + p.years + " 年");
+        ok.push("另須最近 3 年累計獲投資 500 萬元以上、投資者推薦且屬資通訊軟硬體／生技醫療領域，工具無法判定");
+        return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b06", name:"新北市鼓勵廠商國內外參展補助", agency:"新北市政府經濟發展局",
+      region:"新北市", regionKey:"newtaipei", needs:["marketing"], maxWan:8,
+      amount:"場地租金與裝潢費補助不逾 50%：國內個別 2 萬／團體每家 4 萬；國外個別 4 萬／團體每家 8 萬；線上國際展報名費 2 萬元",
+      elig:"登記於新北市之公司、行號、工廠及工商團體；攤位須標示新北市形象標誌",
+      accept:"依經發局年度公告（115 年持續辦理）",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://mice.meettaiwan.com/meettaiwan/home/public/news/202603/T-78119206.pdf", urlText:"新北市參展補助公告（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "newtaipei", "新北市", ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b07", name:"桃園市地方型 SBIR", agency:"桃園市政府經濟發展局",
+      region:"桃園市", regionKey:"taoyuan", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%（自籌須大於補助款）；單一提案 100 萬元、共同提案 200 萬元（每家 100 萬元，限 2 家）",
+      elig:"設籍桃園市中小企業；領域：電子資通、食品及生技製藥、金屬機械、民生化工、創新服務",
+      accept:"依經發局 115 年度公告",
+      docs:["申請表","計畫書","公司登記證明","勞保投保名冊","損益及稅額計算表","401 表","違章欠稅查復表"],
+      url:"https://ws.tycg.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvMTgvcmVsZmlsZS84MTU4LzE1My8zNWRjNDJhMS1hYzE4LTQxN2ItOTQ5OS0zYzkwYWM1NGMyMjAucGRm&n=MTE15bm05qGD5ZySU0JJUl%2Flu6PlrqPoqqrmmI7mnIPnsKHloLEucGRm", urlText:"桃園市地方型 SBIR 申請須知（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "taoyuan", "桃園市", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b08", name:"桃園市產業發展自治條例獎勵", agency:"桃園市政府經濟發展局",
+      region:"桃園市", regionKey:"taoyuan", needs:["tax","hire"], maxWan:500,
+      amount:"地價稅及房屋稅最高 120 萬元／年（總部 180 萬）、租金最高 40 萬元／年（總部 60 萬）、利息補貼年利率 1.5% 內最高 150 萬元／年（均 5 年為限）；新增僱用設籍勞工最高 500 萬元／年（2 年）；職訓費 50% 最高 30 萬元（金額為經濟部彙整簡報，依主管機關最新公告為準）",
+      elig:"桃園市新設投資 5,000 萬元以上或增設 3,000 萬元以上之公司／法人／營運總部；產業含航空關聯、物流、文創、雲端、循環經濟、生技醫療、會展、複合休閒等",
+      accept:"依自治條例及經發局公告",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://investtaiwan.nat.gov.tw/getFile?file=84c87916-a9c5-4349-8957-98730117f202.pdf&Fun=ArticleAction&lang=cht", urlText:"經濟部投資臺灣事務所彙整簡報（PDF）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "taoyuan", "桃園市", ok, no); ok.push("投資門檻（新設 5,000 萬元以上或增設 3,000 萬元以上）與產業類別工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b09", name:"新竹市地方型 SBIR", agency:"新竹市政府產業發展處",
+      region:"新竹市", regionKey:"hsinchu-city", needs:["rd"], maxWan:100, closed:true,
+      amount:"個別 100 萬元、聯合（2 家）200 萬元（每家 100 萬元），補助比例最高 50%（金額結構為計畫官網公告簡報，依當年度須知為準）",
+      elig:"設籍新竹市中小企業（資本額 1 億以下或員工未滿 200 人）；創新技術／創新服務類別；3 年內累計補助不逾 2 案",
+      accept:"115 年度線上申請至 115/6/22 已截止，次年度依官網公告",
+      docs:["官方未明載（須知及格式於計畫官網下載區）"],
+      url:"https://hccitysbir.org/", urlText:"新竹市地方型 SBIR 計畫官網",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "hsinchu-city", "新竹市", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b10", name:"新竹市服務業營業場所能源效率改善補助", agency:"新竹市政府產業發展處",
+      region:"新竹市", regionKey:"hsinchu-city", needs:["energy"], maxWan:10,
+      amount:"隔熱產品每才 300–1,000 元、節能循環扇每台 2,000 元、空氣簾每台 5,000 元、冷氣清洗每台 2,000 元、LED 燈具每組 750 元、招牌燈每組 5,000 元、ISO 50001 驗證每案 10 萬元",
+      elig:"營業場所位於新竹市之服務業商家",
+      accept:"即日起至 115/12/15，視支用情形得提前終止",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://gov.tw/VZL", urlText:"新竹市政府——能源效率改善補助公告",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "hsinchu-city", "新竹市", ok, no);
+        if(isService(p)) ok.push("屬服務業，符合計畫對象"); else no.push("限營業場所位於新竹市之服務業商家，你的產業不在範圍內");
+        return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b11", name:"新竹縣地方型 SBIR", agency:"新竹縣政府產業發展處",
+      region:"新竹縣", regionKey:"hsinchu-county", needs:["rd"], maxWan:100,
+      amount:"最高 100 萬元（114 年度徵件公告）；成數官方未明載",
+      elig:"設籍新竹縣中小企業",
+      accept:"年度徵件依計畫官網公告",
+      docs:["官方未明載（見計畫官網徵件公告）"],
+      url:"http://hchg-sbir.org/", urlText:"新竹縣地方型 SBIR 計畫官網",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "hsinchu-county", "新竹縣", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b12", name:"基隆市機車產業綠能轉型補助", agency:"基隆市政府產業發展處",
+      region:"基隆市", regionKey:"keelung", needs:["energy"], maxWan:20,
+      amount:"新申請車行總上限 20 萬元（綠能轉型 10 萬＋育才 2 萬＋設備 8 萬）；既有友善車行上限 10 萬元",
+      elig:"營業地址及稅籍設於基隆市、營業項目為機車零售或維修保養之獨資／合夥／法人",
+      accept:"115/1/1–115/12/15，預算用罄得提前停止",
+      docs:["補助申請書","電動車維修授權認證證明","自我審核表","經費概算表","切結書","登記證明","最新期 401 報表或繳稅證明"],
+      url:"https://www.klcg.gov.tw/wSite/public/Attachment/00909/f1775017195951.pdf", urlText:"基隆市機車產業綠能轉型補助公告（PDF）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "keelung", "基隆市", ok, no); ok.push("營業項目須為機車零售或維修保養，工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b13", name:"臺中市地方型 SBIR", agency:"臺中市政府經濟發展局",
+      region:"臺中市", regionKey:"taichung", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%，上限 100 萬元（聯合申請 200 萬元、每家 100 萬元）；期程 6 個月至 1 年",
+      elig:"設籍臺中市並辦妥登記：製造業資本額 8,000 萬以下或勞保員工 200 人以內；服務業營業額 1 億以下或勞保員工 100 人以內；無欠稅、未重複申請",
+      accept:"依經發局當年度公告",
+      docs:["申請表","公司變更登記事項卡","最近一年營所稅申報書","無欠稅證明","計畫書 7 份","勞保員工人數證明"],
+      url:"https://lawsearch.taichung.gov.tw/GLRSout/LawContentHistory.aspx?hid=1600&id=GL001171", urlText:"臺中市地方型 SBIR 相關規定（臺中市法規）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "taichung", "臺中市", ok, no); smeGate(p, ok, no); ok.push("提醒：規模門檻依製造業／服務業分別認定，另須無欠稅且未重複申請"); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b14", name:"彰化縣地方型 SBIR", agency:"彰化縣政府經濟暨綠能發展處",
+      region:"彰化縣", regionKey:"changhua", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%，上限 100 萬元；期程 10 個月（須知為 108 年度要點，115 年度仍辦理，依當年度公告為準）",
+      elig:"設立彰化縣並辦妥登記，執行場所在縣內；紡織、車輛運輸優先，物聯網／智慧製造加分",
+      accept:"依縣府當年度公告",
+      docs:["申請表","登記證明","最近一期營所稅與營業稅申報書","無欠稅證明","計畫書 5 份","勞保員工人數證明"],
+      url:"http://bulletin.dyu.edu.tw/file/F0954/66699.pdf", urlText:"彰化縣地方型 SBIR 申請須知（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "changhua", "彰化縣", ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b15", name:"彰化縣青年創業圓夢補助", agency:"彰化縣政府青年發展處",
+      region:"彰化縣", regionKey:"changhua", needs:["rd"], maxWan:50,
+      amount:"每案最高 50 萬元；租金（6 個月）／裝潢各不逾補助總額 30%，生財器具不逾單價 70% 且不逾總額 30%",
+      elig:"設籍彰化縣 18–45 歲青年，3 年內創業輔導課程 30 小時以上，負責人之事業體登記未滿 3 年",
+      accept:"分四梯次收件（115 年度至 11/30）",
+      docs:["申請表","計畫書","經費概算表","創業課程證明","身分證明","登記證明","身分關係聲明書"],
+      url:"https://lawsearch.chcg.gov.tw/GLRSNEWSOUT/Download.ashx?FileID=3929&id=GL000208&type=LAW", urlText:"彰化縣青年創業圓夢補助規定（彰化縣法規 PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = residenceGate(p, "changhua", "彰化縣", ok, no);
+        if(p.age >= 18 && p.age <= 45) ok.push("負責人年齡 18–45 歲，符合青年範圍"); else no.push("負責人年齡須在 18–45 歲，目前 " + p.age + " 歲");
+        if(p.years < 3) ok.push("事業體登記未滿 3 年"); else no.push("負責人之事業體登記須未滿 3 年，你目前成立 " + p.years + " 年");
+        ok.push("另須 3 年內創業輔導課程 30 小時以上（本工具僅記錄 20 小時欄位），請自行確認");
+        return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b16", name:"南投縣地方型 SBIR", agency:"南投縣政府",
+      region:"南投縣", regionKey:"nantou", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%，上限 100 萬元；期程 6 個月至 1 年（文件為 111 年度版本，依當年度公告為準）",
+      elig:"登記於南投縣，資本額 1 億以下或員工未滿 200 人；五大特色產業：農業科技、食品生技、觀光休憩、生活工藝、精密機械",
+      accept:"依縣府當年度公告",
+      docs:["申請表","登記證明","最近一期營所稅與營業稅申報書","無欠稅證明","計畫書 10 份","勞保人數證明","個資同意書"],
+      url:"https://www.nantou.gov.tw/upload/140985_1.pdf", urlText:"南投縣地方型 SBIR 申請文件（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "nantou", "南投縣", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b17", name:"雲林縣地方型 SBIR", agency:"雲林縣政府建設處",
+      region:"雲林縣", regionKey:"yunlin", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%，上限 100 萬元（縣府建議申請 60–70 萬元）；期程最長 1 年",
+      elig:"設籍雲林縣並辦妥登記，資本額 1 億以下或員工未滿 200 人；限農業農產品加工、紡織、文創、工業 4.0 製造四大領域；負責人 18–45 歲且登記 8 年內新創加分",
+      accept:"每年公告受理（115 年度提案截止 115/5/5）",
+      docs:["計畫申請表","計畫書","登記證明","最近一期勞保繳費清單"],
+      url:"https://ws.yunlin.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvNjA5L1NpdGVzL1VwbG9hZEltYWdlcy9lanYwd2RocC5sZ3IucGRm&n=MTEzWVQwODMzOV8xXzEyMDgyNTA1NzkxICgxKS5wZGY%3d", urlText:"雲林縣地方型 SBIR 申請須知（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "yunlin", "雲林縣", ok, no); smeGate(p, ok, no); ok.push("領域限農業農產品加工、紡織、文創、工業 4.0 製造四大領域，工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b18", name:"雲林縣智慧養殖創新事業補助", agency:"雲林縣政府農業處",
+      region:"雲林縣", regionKey:"yunlin", needs:["rd","digital"], maxWan:100,
+      amount:"不逾採購金額 1/2：設備上限 30 萬元、示範計畫上限 100 萬元",
+      elig:"設籍雲林滿 3 年之養殖漁民（領有養殖漁業登記證，具產銷履歷或生產追溯驗證）或漁會、合作社等漁民團體",
+      accept:"115 年度受理 115/4/13–4/30",
+      docs:["申請書","驗證標章證明","身分證明及戶籍謄本","養殖登記證及放養量申報書","設備估價單"],
+      url:"https://www.yunlin.gov.tw/english/News_Content.aspx?n=1324&sms=9695&s=588248", urlText:"雲林縣政府——智慧養殖創新事業補助公告",
+      check:function(p){ var ok=[], no=[]; residenceGate(p, "yunlin", "雲林縣", ok, no); ok.push("須為養殖漁民（領有養殖漁業登記證，具產銷履歷或生產追溯驗證）或漁民團體，且設籍雲林滿 3 年，工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b19", name:"苗栗縣地方型 SBIR", agency:"苗栗縣政府工商發展處",
+      region:"苗栗縣", regionKey:"miaoli", needs:["rd"], maxWan:null, pending:true,
+      amount:"金額／成數／資格官方未明載（計畫辦理中，縣府官網未公開申請須知）",
+      elig:"設籍苗栗縣中小企業（官方未明載）",
+      accept:"依縣府公告",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://www.miaoli.gov.tw/", urlText:"苗栗縣政府官網",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "miaoli", "苗栗縣", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b20", name:"高雄市地方型 SBIR", agency:"高雄市政府經濟發展局",
+      region:"高雄市", regionKey:"kaohsiung", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%；個別 100 萬元、聯合 200 萬元（每家 100 萬元）；期程 6 或 10 個月",
+      elig:"高雄市登記之中小企業（資本額 1 億以下或員工未滿 200 人），執行場所在高雄市，3 年內欠稅／陸資／外國分公司不符",
+      accept:"全面線上申請，依年度公告",
+      docs:["線上申請表","計畫構想表","計畫書","登記證明及變更登記表","最近一年損益及稅額計算表","無欠稅查復表","勞保投保人數證明","個資同意書"],
+      url:"https://orgws.kcg.gov.tw/001/KcgOrgUploadFiles/490/relfile/80061/489087/ea550d96-2735-4d5d-a3b0-8e2830674bbd.pdf", urlText:"高雄市地方型 SBIR 申請須知（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "kaohsiung", "高雄市", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b21", name:"高雄市青年創業發展補助", agency:"高雄市政府青年局",
+      region:"高雄市", regionKey:"kaohsiung", needs:["rd"], maxWan:60,
+      amount:"總經費 70% 為上限，最高 60 萬元",
+      elig:"登記高雄市未滿 8 年、實收資本額未達 1,000 萬元；代表人／負責人 18–45 歲國民且設籍高雄市；須參加創業輔導課程",
+      accept:"依青年局各年度公告",
+      docs:["申請書","計畫書"],
+      url:"https://outlaw.kcg.gov.tw/LawContent.aspx?media=print&id=GL001848", urlText:"高雄市青年創業發展補助規定（高雄市法規）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "kaohsiung", "高雄市", ok, no); residenceGate(p, "kaohsiung", "高雄市", ok, no);
+        if(p.years < 8) ok.push("登記未滿 8 年"); else no.push("限登記未滿 8 年，你目前成立 " + p.years + " 年");
+        if(p.capital < 1000) ok.push("實收資本額未達 1,000 萬元"); else no.push("實收資本額須未達 1,000 萬元");
+        if(p.age >= 18 && p.age <= 45) ok.push("負責人年齡 18–45 歲"); else no.push("負責人年齡須在 18–45 歲，目前 " + p.age + " 歲");
+        ok.push("另須參加創業輔導課程，請自行確認");
+        return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b22", name:"高雄市促進產業發展獎助", agency:"高雄市政府經濟發展局",
+      region:"高雄市", regionKey:"kaohsiung", needs:["tax","hire","rd"], maxWan:1000,
+      amount:"利息補貼年利率 1.5% 內每年最高 150 萬元（重點產業／總部 600 萬元）、租金 50% 每年最高 40 萬元、房屋稅 50% 每年最高 40 萬元、職訓費 50% 合計最高 30 萬元（均 5 年為限）；薪資補助每案最多 50 人（重點產業 100 人）；研發獎勵同一計畫最高 1,000 萬元",
+      elig:"高雄市登記公司：策略性產業新增投資 3,000 萬元以上或增僱 30 人以上，重點發展產業 1,000 萬元以上或增僱 10 人以上；營運總部遷入不受限",
+      accept:"依實施辦法向經發局申請",
+      docs:["申請書","公司登記證明","投資計畫書"],
+      url:"https://outlaw.kcg.gov.tw/LawContent.aspx?media=print&id=GL000527", urlText:"高雄市促進產業發展獎助規定（高雄市法規）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "kaohsiung", "高雄市", ok, no); ok.push("投資／增僱門檻（策略性產業新增投資 3,000 萬元以上或增僱 30 人以上等）工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b23", name:"臺南市地方型 SBIR", agency:"臺南市政府經濟發展局",
+      region:"臺南市", regionKey:"tainan", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%；個別 100 萬元、共同研發 200 萬元（每家 100 萬元）；期程 9 個月",
+      elig:"設籍臺南市中小企業（僅分公司／工廠登記者不具資格），執行場所在臺南市；新創事業類別須設立 5 年內",
+      accept:"全面線上申請，每年公告受理（原則 3–5 月）",
+      docs:["計畫書（線上填報）","年度損益及稅額計算表","無欠稅證明","勞保員工人數證明","個資同意書","切結書"],
+      url:"https://w3fs.tainan.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvMjIvcmVsZmlsZS8xMDA4OC83NjQ3NDA1LzBlZDEyMWY4LTVkYjctNDZmOC1hMTQxLWZiYWYxZTVhMDE1NC5wZGY%3D&n=44CQ5rOo5oSP5LqL6aCF44CRMTA55bm06Ie65Y2XU0JJUueUs%2Biri%2BmgiOefpV8wNDEz54mI5pysLnBkZg%3D%3D", urlText:"臺南市地方型 SBIR 申請須知（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "tainan", "臺南市", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b24", name:"臺南市投資獎勵補助（促進科技與新創產業發展自治條例）", agency:"臺南市政府經濟發展局",
+      region:"臺南市", regionKey:"tainan", needs:["tax"], maxWan:600,
+      amount:"租金 50% 每年不逾 60 萬元（5 年總額 300 萬元）；職訓費 50% 每年不逾 10 萬元（5 年 50 萬元）；房屋稅及地價稅前 2 年全額、後 3 年 50%，每年不逾 120 萬元（5 年總額 600 萬元；數字為經濟部招商中心彙整，依自治條例本文為準）",
+      elig:"設立臺南市且有獨立統編之公司；新設投資 5,000 萬元以上或增設 3,000 萬元以上",
+      accept:"官方未明載",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://investtaiwan.nat.gov.tw/getFile?file=84c87916-a9c5-4349-8957-98730117f202.pdf&Fun=ArticleAction&lang=cht", urlText:"經濟部投資臺灣事務所彙整簡報（PDF）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "tainan", "臺南市", ok, no); ok.push("投資門檻（新設 5,000 萬元以上或增設 3,000 萬元以上）工具無法判定，另須有獨立統一編號"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b25", name:"嘉義市地方型 SBIR", agency:"嘉義市政府建設處",
+      region:"嘉義市", regionKey:"chiayi-city", needs:["rd"], maxWan:100,
+      amount:"不逾總經費 50%，每案上限 100 萬元；期程 6 個月",
+      elig:"設籍嘉義市中小企業；114 年度類別：食品生技、文化創意、健康永續、精密機械",
+      accept:"親送或郵寄嘉易創創育中心（114 年度 5/1–5/31）",
+      docs:["申請書","計畫書","登記證明","自我檢查表","個資同意書"],
+      url:"https://icmp-ws.chiayi.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvNDAwL3JlbGZpbGUvODk5OC8zMDg2Lzc3NTVhNjY0LWQ4ZmEtNDQ5NC1iMWZmLWJmODhmZjA2ZWYyOC5wZGY%3D&n=MTEx5bm05bqm5ZiJ576p5biC5Zyw5pa55Z6LU0JJUueUs%2Biri%2BmgiOefpS5wZGY%3D", urlText:"嘉義市地方型 SBIR 申請須知（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "chiayi-city", "嘉義市", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b26", name:"嘉義市青年創業獎勵補助", agency:"嘉義市政府",
+      region:"嘉義市", regionKey:"chiayi-city", needs:["rd"], maxWan:90,
+      amount:"經常門上限 40 萬元（不逾經常門總經費 80%）；指定區域設立營運另有資本門裝修補助上限 50 萬元；合計最高 90 萬元",
+      elig:"負責人 20–45 歲國民；經營模式優化類須公司與稅籍設於嘉義市、設立未滿 5 年、資本額 50 萬元以上未達 1,000 萬元；創業啟動類未完成登記者亦可",
+      accept:"公告日起至當年度截止日，近年結合全國創新創業競賽徵件",
+      docs:["申請書","負責人身分證影本","登記證明","稅籍登記證明（優化類）","最近一期營業稅申報書或購票證明","切結書"],
+      url:"https://icmp-ws.chiayi.gov.tw/Download.ashx?u=LzAwMS9VcGxvYWQvNDAwL3JlbGZpbGUvOTAwMC83NzQ1MTYvYzk1YzljMjYtMWNjYy00NzJlLWIyMzMtMzk3YjAxZTNlMzdmLnBkZg%3D%3D&n=MTEy5bm05ZiJ576p5biC6Z2S5bm05Ym15qWt542O5Yu16KOc5Yqp6KiI55Wr55%2BlLnBkZg%3D%3D", urlText:"嘉義市青年創業獎勵補助計畫書（PDF）",
+      check:function(p){ var ok=[], no=[];
+        if(p.age >= 20 && p.age <= 45) ok.push("負責人年齡 20–45 歲，符合青年範圍"); else no.push("負責人年齡須在 20–45 歲，目前 " + p.age + " 歲");
+        ok.push("經營模式優化類須公司與稅籍設於嘉義市、設立未滿 5 年、資本額 50 萬元以上未達 1,000 萬元；創業啟動類未完成登記者亦可，類別條件請對照官方資格確認");
+        return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b27", name:"嘉義縣地方型 SBIR", agency:"嘉義縣政府經濟發展處",
+      region:"嘉義縣", regionKey:"chiayi-county", needs:["rd"], maxWan:null, pending:true,
+      amount:"金額／成數／期限官方未明載（計畫辦理中，縣府官網未公開申請須知）",
+      elig:"設籍嘉義縣中小企業（官方未明載）",
+      accept:"依縣府公告",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://www.cyhg.gov.tw/", urlText:"嘉義縣政府官網",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "chiayi-county", "嘉義縣", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b28", name:"屏東縣地方型 SBIR", agency:"屏東縣政府",
+      region:"屏東縣", regionKey:"pingtung", needs:["rd"], maxWan:null, pending:true,
+      amount:"金額／成數／期限官方未明載（計畫辦理中，縣府官網未公開申請須知）",
+      elig:"設籍屏東縣中小企業（官方未明載）",
+      accept:"依縣府公告",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://www.pthg.gov.tw/", urlText:"屏東縣政府官網",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "pingtung", "屏東縣", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b29", name:"花蓮縣地方型 SBIR", agency:"花蓮縣政府",
+      region:"花蓮縣", regionKey:"hualien", needs:["rd"], maxWan:100,
+      amount:"每案上限 100 萬元，不逾總經費 50%",
+      elig:"花蓮縣登記之中小企業（資本額 1 億以下或員工未滿 200 人），計畫須具創新技術或創新服務特質，未重複申請補助",
+      accept:"依年度公告分階段受理",
+      docs:["申請書及研發計畫書","登記證明","最近一期勞保繳費清單","最近一期營所稅申報書","未重複申請補助切結書"],
+      url:"https://td.hl.gov.tw/Upload/201811021347469132601.pdf", urlText:"花蓮縣地方型 SBIR 申請須知（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "hualien", "花蓮縣", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b30", name:"花蓮縣青年創業營業稅補助", agency:"花蓮縣政府青年發展中心",
+      region:"花蓮縣", regionKey:"hualien", needs:["tax"], maxWan:10,
+      amount:"各期營業稅額 50%，每年度最高 10 萬元，最長 24 個月",
+      elig:"申請人 18–45 歲；事業體於花蓮縣完成登記、設立未滿 5 年（新創認定放寬 8 年），資本額 1,000 萬元以下，前一年度營業額未達 500 萬元，未曾受同性質營業稅補助",
+      accept:"公告日起受理至經費用罄",
+      docs:["營業稅補助申請書","身分證影本","登記證明","稅籍登記證明","最近一期營業稅申報書及繳納證明","切結書"],
+      url:"https://ydc.org.tw/zh-hant/system/Tax/", urlText:"花蓮縣青年發展中心——營業稅補助專區",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "hualien", "花蓮縣", ok, no);
+        if(p.age >= 18 && p.age <= 45) ok.push("申請人年齡 18–45 歲"); else no.push("申請人年齡須在 18–45 歲，目前 " + p.age + " 歲");
+        if(p.years < 5) ok.push("事業體設立未滿 5 年"); else if(p.years < 8){ ok.push("設立 5–8 年：新創認定放寬至 8 年，請對照官方資格確認"); sp = true; } else no.push("事業體設立須未滿 5 年（新創認定放寬 8 年），你目前成立 " + p.years + " 年");
+        if(p.capital <= 1000) ok.push("資本額 1,000 萬元以下"); else no.push("資本額須在 1,000 萬元以下");
+        if(p.revenue < 500) ok.push("前一年度營業額未達 500 萬元（以你填寫的年營收推估）"); else no.push("前一年度營業額須未達 500 萬元，你填寫的年營收為 " + p.revenue + " 萬元");
+        ok.push("提醒：未曾受同性質營業稅補助者才可申請");
+        return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b31", name:"花蓮縣青年創業獎勵補助（115 年度）", agency:"花蓮縣政府青年發展中心",
+      region:"花蓮縣", regionKey:"hualien", needs:["rd"], maxWan:100,
+      amount:"每案最高 100 萬元，補助比例最高 70%，自籌至少 30%",
+      elig:"申請人 18 歲以上未滿 46 歲、設籍花蓮縣，營運地點在花蓮縣；新創設立組／創業發展組",
+      accept:"115 年度徵件至 115/9/25 截止",
+      docs:["計畫申請書","A-12 提案簡報"],
+      url:"https://ydc.org.tw/zh-hant/system/hyegp/", urlText:"花蓮縣青年發展中心——青年創業獎勵補助專區",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "hualien", "花蓮縣", ok, no); residenceGate(p, "hualien", "花蓮縣", ok, no);
+        if(p.age >= 18 && p.age < 46) ok.push("申請人年齡 18 歲以上未滿 46 歲"); else no.push("申請人年齡須為 18 歲以上未滿 46 歲，目前 " + p.age + " 歲");
+        return {ok:ok, no:no}; }
+    },
+    {
+      id:"b32", name:"品牌臺東產業行銷補助（116 年）", agency:"臺東縣政府財政及經濟發展處",
+      region:"臺東縣", regionKey:"taitung", needs:["marketing"], maxWan:12,
+      amount:"國內展覽每案最高 4 萬元、國際競賽每案最高 12 萬元，每單位每年度各限 1 案",
+      elig:"臺東縣立案法人／團體或完成登記之公司／商業；以參加縣外展覽（售）及國際競賽為限",
+      accept:"115/10/1–10/31 受理（送達為準），執行期間 116/1/1–11/30",
+      docs:["申請表件","利益衝突迴避揭露表","登記證明（依簡章）"],
+      url:"https://finance.taitung.gov.tw/News_Content.aspx?n=15773&sms=12744&s=149524", urlText:"臺東縣政府——品牌臺東產業行銷補助公告",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "taitung", "臺東縣", ok, no); ok.push("提醒：補助以參加縣外展覽（售）及國際競賽為限"); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b33", name:"臺東縣地方型 SBIR", agency:"臺東縣政府財政及經濟發展處",
+      region:"臺東縣", regionKey:"taitung", needs:["rd"], maxWan:null, pending:true,
+      amount:"金額／成數官方未明載（辦理逾 15 年，官方申請須知未公開取得）",
+      elig:"設籍臺東縣中小企業（官方未明載）",
+      accept:"依縣府公告",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://www.taitung.gov.tw/", urlText:"臺東縣政府官網",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "taitung", "臺東縣", ok, no); smeGate(p, ok, no); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b34", name:"澎湖縣地方型 SBIR", agency:"澎湖縣政府建設處",
+      region:"澎湖縣", regionKey:"penghu", needs:["rd"], maxWan:100,
+      amount:"個別每案上限 100 萬元；研發聯盟每案 200 萬元（每家 100 萬元）；不逾總經費 50%",
+      elig:"符合中小企業認定之獨資／合夥／公司（不含分公司），執行場所在澎湖縣內；領域：觀光旅遊、健康長照、食品產業、數位應用",
+      accept:"依縣府年度公告",
+      docs:["計畫申請表","登記證明","最近一期勞保繳費清單或被保險人名冊","最近一期營所稅申報書","最近一期營業稅申報書","無欠稅證明","自我檢查表","個資同意書"],
+      url:"https://www.penghu.gov.tw/uploaddowndoc?file=unit02/202504301116481.pdf&filedisplay=114%E5%B9%B4%E5%BA%A6%E6%BE%8E%E6%B9%96%E7%B8%A3%E6%94%BF%E5%BA%9F%E5%9C%B0%E6%96%B9%E7%94%A2%E6%A5%AD%E5%89%B5%E6%96%B0%E7%A0%94%E7%99%BC%E6%8E%A8%E5%8B%95%E8%A8%88%E7%95%AB%E4%BD%9C%E6%A5%AD%E8%A6%81%E9%BB%9E.pdf&flag=pdf", urlText:"澎湖縣地方型 SBIR 作業要點（PDF）",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "penghu", "澎湖縣", ok, no); smeGate(p, ok, no); ok.push("提醒：執行場所須在澎湖縣內，分公司不具資格"); return {ok:ok, no:no, special:sp}; }
+    },
+    {
+      id:"b35", name:"澎湖縣觀光獎勵旅遊補助（MICE）", agency:"澎湖縣政府旅遊處",
+      region:"澎湖縣（活動須在澎湖辦理）", regionKey:"penghu", needs:["marketing"], maxWan:60,
+      amount:"國內型每人 1,000 元、每案上限 30 萬元（不逾總經費 50%）；國際型每人 2,000 元、每案上限 60 萬元（不逾 70%）",
+      elig:"登記有案之社團／法人／機關團體／學術機構／公民營團體；活動在澎湖 2 日以上、縣內合法旅宿住宿 1 晚以上；國內型 50 人以上且 75% 外縣市人士，國際型 100 人以上、外國人士 10% 以上且至少 3 國",
+      accept:"活動前申請，每半年審查一次",
+      docs:["申請書","活動計畫書","經費概算表","立案登記證明"],
+      url:"https://newtaipei.travel/file/4189/", urlText:"澎湖縣觀光獎勵旅遊補助公告（PDF）",
+      check:function(p){ var ok=[], no=[]; ok.push("登記有案之團體可申請，不以設籍澎湖為限"); ok.push("活動須在澎湖辦理 2 日以上並住宿縣內合法旅宿 1 晚以上，且人數與外縣市／外國人士比例須達門檻，工具無法判定"); return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b36", name:"金門縣影視業者拍攝補助", agency:"金門縣文化局",
+      region:"金門縣（須在金門拍攝）", regionKey:"kinmen", needs:["rd"], maxWan:1000,
+      amount:"不逾製作總成本 40%；電影片每部上限 1,000 萬元；電視劇每集 100 萬元、整齣上限 1,000 萬元",
+      elig:"於金門縣拍攝製作之影視業者（電影片／電視劇製作單位）",
+      accept:"每年 1/1–4/30 受理",
+      docs:["申請書","製作企劃書","設立或登記證明","劇本","公開播映及行銷計畫","過去製作實績","預期效益及回饋計畫"],
+      url:"https://law.kinmen.gov.tw/LawContent.aspx?id=GL000023", urlText:"金門縣影視業者拍攝補助規定（金門縣法規）",
+      check:function(p){ var ok=[], no=[];
+        if(p.industry === "culture") ok.push("屬文創影視範疇"); else no.push("限於金門拍攝製作之影視業者（電影片／電視劇製作單位），你的產業不在範圍內");
+        ok.push("拍攝地點須在金門縣，工具無法判定");
+        return {ok:ok, no:no, special:true}; }
+    }
+    ];
+
+    var subState = { filter:"all", region:"all", need:"all" };
+    function selectedNeeds(){
+      var out=[]; var chips = document.querySelectorAll("#s-needs .chip");
+      for(var i=0;i<chips.length;i++){ if(chips[i].getAttribute("aria-pressed")==="true") out.push(chips[i].getAttribute("data-need")); }
+      return out;
+    }
+    function renderSubsidies(){
+      var p = profile(); var needs = selectedNeeds();
+      $("subsidy-total").textContent = SUBSIDIES.length;
+      var results = SUBSIDIES.map(function(s){
+        var chk = s.check(p);
+        var tier = chk.no.length ? "no" : "ok";
+        var needHit = s.needs.some(function(n){ return needs.indexOf(n) >= 0; });
+        if(tier === "ok" && chk.special) tier = "mid";
+        if(tier === "ok" && !needHit && needs.length) tier = "mid";
+        if(tier === "ok" && s.closed) tier = "mid";
+        if(tier === "ok" && s.pending) tier = "mid";
+        return {s:s, chk:chk, tier:tier, needHit:needHit};
+      });
+      var order = {ok:0, mid:1, no:2};
+      results.sort(function(a,b){
+        if(order[a.tier] !== order[b.tier]) return order[a.tier] - order[b.tier];
+        return (b.s.maxWan||0) - (a.s.maxWan||0);
+      });
+      var okCount = results.filter(function(r){return r.tier==="ok";}).length;
+      var midCount = results.filter(function(r){return r.tier==="mid";}).length;
+      var totalWan = results.filter(function(r){return r.tier!=="no";}).reduce(function(sum,r){ return sum + (r.s.maxWan||0); }, 0);
+      $("cnt-subsidy").textContent = okCount + " 項符合";
+      $("subsidy-summary").innerHTML =
+        '<div class="stat"><div class="n">' + okCount + ' 項</div><div class="t">資格符合可申請</div></div>' +
+        '<div class="stat"><div class="n">' + midCount + ' 項</div><div class="t">可能符合／待確認</div></div>' +
+        '<div class="stat"><div class="n">最高 ' + totalWan.toLocaleString() + ' 萬元</div><div class="t">符合＋可能符合的補助上限合計（各計畫分開申請、不得重複補助同一支出）</div></div>';
+      var shown = results.filter(function(r){
+        if(subState.filter !== "all" && r.tier !== subState.filter) return false;
+        if(subState.region === "rural" && r.s.regionKey !== "rural") return false;
+        if(subState.region === "nationwide" && r.s.regionKey !== "nationwide") return false;
+        if(subState.region !== "all" && subState.region !== "rural" && subState.region !== "nationwide" && r.s.regionKey !== "nationwide" && r.s.regionKey !== subState.region) return false;
+        if(subState.need !== "all" && r.s.needs.indexOf(subState.need) < 0) return false;
+        return true;
+      });
+      if(!shown.length){ $("subsidy-results").innerHTML = '<div class="card empty">這個篩選組合目前沒有項目，換個篩選或調整公司條件試試。</div>'; return; }
+      $("subsidy-results").innerHTML = shown.map(function(r){
+        var s = r.s;
+        var badge = r.tier==="ok" ? '<span class="badge b-ok">符合</span>' : (r.tier==="mid" ? '<span class="badge b-mid">可能符合</span>' : '<span class="badge b-no">不符合</span>');
+        var lis = r.chk.ok.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("") +
+                  r.chk.no.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("");
+        if(r.chk.special) lis += "<li>資格含特殊條件，請對照官方資格確認</li>";
+        if(s.pending) lis += "<li>官方申請須知未公開，規格依主管機關公告為準</li>";
+        if(r.tier==="mid" && s.closed) lis += "<li>本計畫本年度梯次已截止，金額先供下年度備料參考</li>";
+        if(r.tier==="mid" && !s.closed && !r.chk.special && !r.needHit) lis += "<li>資格符合，但不在你目前勾選的「補助需求類型」裡，先列為次優先</li>";
+        var reasons = lis ? '<div class="reasons"><ul>' + lis + "</ul></div>" : "";
+        var docs = s.docs.map(function(d){ return "<li>" + esc(d) + "</li>"; }).join("");
+        return '<article class="card' + (r.tier==="no" ? " dim" : "") + '">' +
+          '<div class="card-head"><div><h3>' + esc(s.name) + '</h3><div class="agency">' + esc(s.agency) + '</div></div>' + badge + '</div>' +
+          '<div class="amount">' + esc(s.amount) + '</div>' +
+          '<dl class="grid2">' +
+          '<div><dt>適用地區</dt><dd>' + esc(s.region) + '</dd></div>' +
+          '<div><dt>受理方式</dt><dd>' + esc(s.accept) + '</dd></div>' +
+          '<div><dt>查證日期</dt><dd>2026-10-20</dd></div>' +
+          '</dl>' +
+          '<p class="desc"><b>資格摘要</b>' + esc(s.elig) + '</p>' + reasons +
+          '<details><summary>應備文件（' + s.docs.length + ' 項）</summary><ul>' + docs + '</ul></details>' +
+          '<a class="official" href="' + s.url + '" target="_blank" rel="noopener">官方連結：' + esc(s.urlText) + ' →</a>' +
+          '</article>';
+      }).join("");
+    }
+    </script>
+
+    <script>
+    "use strict";
+    function loanInputs(){
+      return {
+        amount: num("l-amount"), purpose: $("l-purpose").value, collateral: $("l-collateral").value,
+        age: num("s-age"), gender: $("s-gender").value, residence: $("s-residence").value,
+        course: $("s-course").value === "yes" ? 20 : 0,
+        innovation: $("l-innovation").value, transform: $("l-transform").value
+      };
+    }
+
+    /* ================= 貸款資料庫：22 項 L01–L22（查證 2026-10-20） ================= */
+    /* channel:"guarantee"=保證通道、channel:"assist"=融資協助通道（性質不同於貸款本體）；pending:true=部分待複核 */
+    /* check 回傳 {ok:[], fix:[], no:[]}：no=資格不符；fix=補件或調整後可符合 */
+    var LOANS = [
+    {
+      id:"L01", name:"青年創業貸款", agency:"經濟部中小及新創企業署",
+      capWan:1800, capText:"週轉最高 600 萬元；資本最高計畫經費 8 成、上限 1,200 萬元；同一負責人合計不逾 1,800 萬元",
+      rateText:"郵儲二年期定儲機動 +0.575%；歸戶 100 萬元以下部分依貸款利率補貼最長 5 年（2025/7/1 更名，原青年創業及啟動金貸款）",
+      termText:"週轉最長 6 年（寬限 2 年）；資本廠房最長 20 年（寬限 5 年）、設備最長 7 年（寬限 3 年）",
+      guarText:"8–9 成（100 萬元以下 9.5 成、批次 10 成）",
+      desc:"設立未滿 8 年中小企業（非金融保險／特殊娛樂），負責人 18–45 歲、自然人出資占資本額 20% 以上，3 年內創業課程 20 小時或 2 學分。",
+      docs:["創業貸款計畫書（100 萬元以下得以申請表代之）","身分證明","登記證明","課程證明","聯徵同意書"],
+      url:"https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg031093/ch04/type2/gov31/num8/Eg.pdf", urlText:"青年創業貸款要點（政府公報 PDF）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.years < 8) ok.push("公司設立未滿 8 年"); else no.push("公司設立已滿 8 年，不符青創貸款資格");
+        if(l.age >= 18 && l.age <= 45) ok.push("負責人年齡 18–45 歲"); else no.push("負責人年齡須在 18–45 歲之間，目前 " + l.age + " 歲");
+        if(l.course >= 20) ok.push("創業課程已達 20 小時"); else fix.push("負責人須先於 3 年內完成創業課程 20 小時（或 2 學分）才能送件");
+        var cap = l.purpose === "capital" ? 1200 : 600;
+        if(l.amount <= cap) ok.push("需求金額在" + (l.purpose==="capital" ? "資本" : "週轉") + "額度 " + cap + " 萬元內"); else fix.push("需求 " + l.amount + " 萬元超過" + (l.purpose==="capital" ? "資本" : "週轉") + "額度上限 " + cap + " 萬元，需調降金額或搭配其他貸款");
+        ok.push("另須確認：負責人自然人出資占資本額 20% 以上，且非金融保險／特殊娛樂業");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L02", name:"微型創業鳳凰貸款", agency:"勞動部勞動力發展署",
+      capWan:200, capText:"最高 200 萬元（免登記小規模商業 50 萬元）",
+      rateText:"郵儲 +0.575%；前 2 年利息全額補貼（特定身分前 3 年全額、第 4 年起補貼逾年息 1.5% 差額）",
+      termText:"最長 7 年，寬限最長 1 年",
+      guarText:"9.5 成，免保證人、免擔保品",
+      desc:"未滿 45 歲女性、45–65 歲者或設籍離島成年人；創業研習 18 小時＋諮詢輔導；事業登記未逾 5 年、員工未滿 5 人；以負責人名義申請。",
+      docs:["申請書","創業貸款計畫書","稅籍及核准文件","切結書","身分證影本","聯徵報告","研習證明"],
+      url:"https://beboss.wda.gov.tw", urlText:"微型創業鳳凰網（勞動力發展署）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        var island = (l.residence==="penghu" || l.residence==="kinmen" || l.residence==="lienchiang");
+        var target = (l.gender==="female" && l.age < 45) || (l.age >= 45 && l.age <= 65) || island;
+        if(target) ok.push("負責人符合鳳凰對象（女性未滿 45 歲、45–65 歲或設籍離島成年人）"); else no.push("鳳凰對象限：未滿 45 歲女性、45–65 歲者或設籍離島成年人——目前負責人條件不在範圍內");
+        if(p.years <= 5) ok.push("事業登記未逾 5 年"); else no.push("事業登記已逾 5 年");
+        if(p.employees < 5) ok.push("員工未滿 5 人"); else no.push("員工須未滿 5 人，目前 " + p.employees + " 人");
+        if(l.course >= 18) ok.push("創業研習已達 18 小時（以 20 小時欄位推估）"); else if(!no.length) fix.push("須先完成創業研習 18 小時並經諮詢輔導");
+        if(l.amount <= 200) ok.push("需求金額在 200 萬元額度內"); else fix.push("需求超過 200 萬元上限，需調降或搭配其他貸款");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L03", name:"失業中高齡者及高齡者創業貸款", agency:"勞動部勞動力發展署",
+      capWan:200, capText:"最高 200 萬元",
+      rateText:"利息補貼至少 2 年（利率／期限／成數依鳳凰網公告）",
+      termText:"年限依要點公告",
+      guarText:"成數依要點公告",
+      desc:"失業中高齡者及高齡者，事業設立登記未逾 5 年。",
+      docs:["依鳳凰網公告（創業計畫書、登記證明、身分證明）"],
+      url:"https://beboss.wda.gov.tw", urlText:"微型創業鳳凰網（勞動力發展署）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.identity === "midage-unemployed") ok.push("具失業中高齡身分，符合本貸款核心對象"); else no.push("限失業中高齡者及高齡者——你目前的特殊身分未符合");
+        if(p.years <= 5) ok.push("事業設立登記未逾 5 年"); else no.push("事業設立登記已逾 5 年");
+        if(l.amount <= 200) ok.push("需求金額在 200 萬元額度內"); else fix.push("需求超過 200 萬元上限");
+        ok.push("利率、期限與保證成數依鳳凰網最新公告為準");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L04", name:"企業小頭家貸款", agency:"經濟部中小及新創企業署",
+      capWan:500, capText:"週轉最高 500 萬元（受災事業不限額度）；資本以計畫經費 8 成為原則",
+      rateText:"保證 8 成以上最高郵儲 +2.125%、7–8 成最高 +3.125%；新創（未滿 5 年）及傳承創新事業 9 成保證、利率最高 +1.5%；受災 9.5 成",
+      termText:"週轉最長 6 年（寬限 2 年）；資本廠房 20 年（寬限 5 年）、設備 7 年（寬限 3 年）",
+      guarText:"最高 10 成（依事業類別）",
+      desc:"公司／有限合夥／商業／稅籍登記，員工 10 人以下營利事業。",
+      docs:["貸款申請書","登記或稅籍證明","身分證明","聯徵同意書","資金用途計畫書"],
+      url:"https://www.sme.gov.tw/article-tw-2893-13916", urlText:"中小及新創企業署——企業小頭家貸款",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.employees <= 10) ok.push("員工 10 人以下，符合小頭家對象"); else no.push("小頭家限員工 10 人以下，你目前 " + p.employees + " 人");
+        if(l.purpose === "capital"){ ok.push("資本支出以計畫經費 8 成為原則，額度依計畫核定"); }
+        else if(l.amount <= 500) ok.push("需求金額在週轉額度 500 萬元內"); else fix.push("週轉需求超過 500 萬元上限（受災事業不限額度除外），需調降或搭配其他貸款");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L05", name:"中小微企業多元發展專案貸款", agency:"經濟部中小及新創企業署",
+      capWan:3500, capText:"每事業最高 3,500 萬元（設備不逾經費 8 成）；信保融資額度最高 1 億元",
+      rateText:"上限郵儲 +0.5%；250 萬元以內年利率 1.5% 補貼最長 6 個月；關稅加碼版 1,000 萬元以內減碼 1.5% 最長 6 個月",
+      termText:"資本最長 7 年（寬限 3 年）、週轉最長 6 年（寬限 2 年）",
+      guarText:"100 萬元以內 10 成、逾 100 萬元最低 9 成，手續費年費率 0.1%",
+      desc:"近 6 個月任一月員工 30 人以下之中小企業或稅籍登記事業（非金融保險／特殊娛樂），朝數位／淨零轉型或通路發展；申貸至 117/10/31。",
+      docs:["切結書","登記或稅籍證明","轉型資格證明","身分證明"],
+      url:"https://0800056476.sme.gov.tw", urlText:"中小微企業多元發展專案貸款專區",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.employees <= 30) ok.push("員工 30 人以下，符合中小微企業範圍"); else no.push("限近 6 個月任一月員工 30 人以下企業");
+        if(l.transform === "yes") ok.push("已規劃數位／淨零／通路轉型，符合申請方向"); else fix.push("須朝數位／淨零轉型或通路發展——補上轉型規劃即可送件");
+        if(l.amount <= 3500) ok.push("需求金額在 3,500 萬元額度內"); else fix.push("需求超過 3,500 萬元上限");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L06", name:"文化創意產業優惠貸款", agency:"文化部",
+      capWan:10000, capText:"計畫需要 8 成為限，第一類每件最高 1 億元、第二類每件最高 1,000 萬元，同一企業總額度最高 1 億元",
+      rateText:"中長期資金運用利率＋銀行加碼（不逾 2%）；第二類利息補貼年利率 1.5% 最長 5 年",
+      termText:"有形資產最長 15 年（寬限 3 年）；無形資產／研發最長 7 年（寬限 2 年）；週轉最長 5 年（寬限 1 年）",
+      guarText:"擔保不足得移送信保基金",
+      desc:"第一類文創產業依法登記業者；第二類另須符合中小企業認定。",
+      docs:["貸款計畫書","登記證明","文創類別認定文件","身分證明","財務資料"],
+      url:"https://www.lawtw.com/archives/392730", urlText:"文化創意產業優惠貸款要點說明",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.industry === "culture") ok.push("屬文化創意產業，符合計畫對象"); else no.push("限文化創意產業依法登記業者，你的產業不在範圍內");
+        if(l.amount <= 10000) ok.push("需求金額在第一類每件 1 億元上限內（第二類每件上限 1,000 萬元，類別由審查核定）"); else fix.push("需求超過同一企業總額度 1 億元上限");
+        ok.push("第二類另須符合中小企業認定，送件前請確認類別");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L07", name:"文化創意產業青年創業貸款（文創青創）", agency:"文化部／文策院",
+      capWan:1800, capText:"總上限 1,800 萬元（週轉 600 萬元、資本 1,200 萬元且不逾經費 8 成）",
+      rateText:"郵儲 +0.575%；全額利息補貼、年利率最高 2.5%、最長 5 年",
+      termText:"依青年創業貸款要點（週轉 6 年、廠房 20 年、設備 7 年）",
+      guarText:"原則 8–9 成、最高 10 成",
+      desc:"文創產業或文策院輔導業種，設立 8 年以內，代表人 18–45 歲、出資占資本額 20% 以上，創業課程 20 小時或 2 學分。",
+      docs:["計畫書（100 萬元以內簡式申請表）","登記證明","課程證明","身分證明"],
+      url:"https://www.taicca.tw/content/module_download_file/%E6%87%B6%E4%BA%BA%E5%8C%85%EF%BC%88%E9%99%84%EF%BC%9A%E7%94%B3%E8%AB%8B%E6%96%87%E4%BB%B6%E5%A1%AB%E5%AF%AB%E8%AA%AA%E6%98%8E%EF%BC%89.pdf?id=477&type=pdf", urlText:"文策院——文創青創貸款申請懶人包（PDF）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.industry === "culture") ok.push("屬文化創意產業或文策院輔導業種"); else no.push("限文創產業或文策院輔導業種，你的產業不在範圍內");
+        if(p.years <= 8) ok.push("設立 8 年以內"); else no.push("設立已逾 8 年");
+        if(l.age >= 18 && l.age <= 45) ok.push("代表人年齡 18–45 歲"); else no.push("代表人年齡須在 18–45 歲");
+        if(l.course >= 20) ok.push("創業課程已達 20 小時"); else if(!no.length) fix.push("須先完成創業課程 20 小時（或 2 學分）");
+        var cap = l.purpose === "capital" ? 1200 : 600;
+        if(l.amount <= cap) ok.push("需求金額在分項額度內"); else if(!no.length) fix.push("需求超過" + (l.purpose==="capital" ? "資本 1,200" : "週轉 600") + " 萬元分項上限");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L08", name:"促進產業創新或研究發展貸款（研貸）", agency:"國家發展基金／經濟部",
+      capWan:6500, capText:"計畫總經費 8 成、最高 6,500 萬元",
+      rateText:"依要點規定",
+      termText:"最長 10 年",
+      guarText:"依要點規定",
+      desc:"從事產業創新或研究發展之企業，須經主管機關推薦。本項取代原「中小企業創新發展專案貸款」（查無現行官方要點，已移除）。",
+      docs:["依要點及推薦程序"],
+      url:"https://law.moea.gov.tw/LawContent.aspx?id=FL057428", urlText:"促進產業創新或研究發展貸款要點（經濟部法規）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(l.innovation === "yes") ok.push("已具研發／創新背景，符合申請前提方向"); else fix.push("須從事產業創新或研究發展並經主管機關推薦——先備妥研發實績與推薦程序再送件");
+        if(l.amount <= 6500) ok.push("需求金額在 6,500 萬元額度內（且不逾計畫總經費 8 成）"); else fix.push("需求超過 6,500 萬元上限");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L09", name:"臺北市青年創業融資貸款", agency:"臺北市政府青年局",
+      capWan:400, capText:"最高 200 萬元；登記未滿 1 年另加創業準備金 100 萬元（合計 300 萬元），符合條件者至 400 萬元",
+      rateText:"上限郵儲 +0.555%，利息由青年局全額補貼",
+      termText:"無擔保最長 5 年、擔保最長 7 年，寬限最長 3 年",
+      guarText:"9.5 成",
+      desc:"代表人成年至未滿 46 歲、設籍臺北市 1 年以上、近 3 年創業課程 20 小時；事業登記未滿 5 年且地址在臺北市。",
+      docs:["申請表","創業計畫書","身分證明","登記證明","課程證明","聯徵同意書"],
+      url:"https://youth.gov.taipei/api/v1/file.download?file_id=aa558426-ec0c-4aaa-8cca-93cf8fa90209", urlText:"臺北市青年局——青年創業融資貸款文件",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.city==="taipei") ok.push("公司登記於臺北市"); else no.push("事業登記地址須在臺北市");
+        if(l.residence==="taipei") ok.push("負責人設籍臺北市"); else no.push("代表人須設籍臺北市 1 年以上，目前設籍其他縣市");
+        if(l.age < 46) ok.push("代表人未滿 46 歲"); else no.push("代表人須成年至未滿 46 歲，目前 " + l.age + " 歲");
+        if(p.years < 5) ok.push("事業登記未滿 5 年"); else no.push("事業登記已滿 5 年");
+        if(l.course >= 20) ok.push("創業課程已達 20 小時"); else if(!no.length) fix.push("須先完成近 3 年內創業課程 20 小時");
+        if(l.amount <= 200) ok.push("需求金額在單次 200 萬元額度內"); else if(l.amount <= 400) fix.push("需求逾單次 200 萬元：登記未滿 1 年可加創業準備金至 300 萬元，符合條件者至 400 萬元，請向青年局確認"); else fix.push("需求超過本貸款最高 400 萬元，需搭配其他貸款");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L10", name:"臺北市中小企業融資貸款", agency:"臺北市政府產業發展局",
+      capWan:1000, capText:"第一類 100 萬元、第二類 400 萬元、第三類 500 萬元（具國際合作等情形放寬至 1,000 萬元）",
+      rateText:"上限郵儲 +1.325%；利息補貼視景氣另行公告",
+      termText:"最長 5 年（寬限最長 1 年）",
+      guarText:"前一年營業額 500 萬元以上 9 成、未達 9.5 成；負責人須連帶保證",
+      desc:"登記臺北市且實際營業 1 年以上（第一類為設籍北市 20–65 歲、免辦商業登記之小規模商業；第三類限資通訊／生技／綠能／健康照護／文創／觀光等策略性產業）。",
+      docs:["申請表","身分證影本","事業計畫書","切結書","登記證明","聯徵報告"],
+      url:"https://laws.gov.taipei/Law/LawSearch/LawPrint/FL048203?type=0&date=20200511", urlText:"臺北市中小企業融資貸款實施要點（北市法規）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.city==="taipei") ok.push("公司登記於臺北市"); else no.push("須登記於臺北市");
+        if(p.years >= 1) ok.push("實際營業 1 年以上"); else no.push("須實際營業 1 年以上，目前成立未滿 1 年（第一類小規模商業除外）");
+        if(l.amount <= 1000) ok.push("需求金額在放寬後最高 1,000 萬元內（實際類別與額度由市府核定）"); else fix.push("需求超過最高額度 1,000 萬元");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L11", name:"新北市創新創業及中小企業信用保證融資貸款", agency:"新北市政府經濟發展局",
+      capWan:1000, capText:"創業貸款 200 萬元；一般第一類 200 萬元、第二類（策略性產業）500 萬元、第三類（智慧自動化設備）1,000 萬元（不逾購置經費 70%）",
+      rateText:"上限：創業郵儲 +1.2%、一般 +1.45%；創業利息補貼視年度預算公告",
+      termText:"最長 5 年（寬限最長 1 年）",
+      guarText:"創業 9.5 成；一般營業額 500 萬元以上 9 成、未達或設立未滿 1 年 9.5 成",
+      desc:"登記新北市中小企業；創業貸款另須設立未滿 5 年、負責人 20 歲以上設籍新北市、創業課程 20 小時。",
+      docs:["申請表","身分證明","事業計畫書","切結書","登記證明","聯徵報告","欠稅查復證明"],
+      url:"https://web.law.ntpc.gov.tw/Scripts/FLAWDOC02.aspx?rtype=H&RCODE2=C0040026&RNO=17", urlText:"新北市信用保證融資貸款要點（新北市法規）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.city==="newtaipei") ok.push("公司登記於新北市"); else no.push("須登記於新北市");
+        if(l.purpose === "startup"){
+          if(p.years < 5) ok.push("創業貸款：設立未滿 5 年"); else no.push("創業貸款限設立未滿 5 年");
+          if(l.residence==="newtaipei" && l.age >= 20) ok.push("負責人 20 歲以上且設籍新北市"); else no.push("創業貸款負責人須 20 歲以上且設籍新北市");
+          if(l.course >= 20) ok.push("創業課程已達 20 小時"); else if(!no.length) fix.push("創業貸款須先完成創業課程 20 小時");
+          if(l.amount <= 200) ok.push("需求金額在創業貸款 200 萬元內"); else if(!no.length) fix.push("創業貸款上限 200 萬元，一般類別最高 500 萬元／設備類 1,000 萬元，請改按類別送件");
+        } else {
+          if(l.amount <= 1000) ok.push("需求金額在一般類別最高 1,000 萬元內（類別與額度依審查核定）"); else fix.push("需求超過最高額度 1,000 萬元");
+        }
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L12", name:"基隆市中小企業圓夢貸款（含青年創業貸款利息補貼）", agency:"基隆市政府產業發展處", pending:true,
+      capWan:100, capText:"每案最高 100 萬元；通過圓夢貸款且負責人 18–45 歲者，得就 200 萬元額度申請利息補貼",
+      rateText:"利率／期限／成數：官方要點全文未查得，不臆測，依主管機關公告為準",
+      termText:"依主管機關公告為準（官方要點全文未查得）",
+      guarText:"依主管機關公告為準（官方要點全文未查得）",
+      desc:"登記基隆市之中小企業（分一、二、三類）。",
+      docs:["申請表","身分證影本","事業計畫書","切結書","登記證明","近三年營所稅申報書","401/403/405 申報書","近三年財報","聯徵報告（官方檢核表）"],
+      url:"https://www.klcg.gov.tw/wSite/public/Attachment/00909/f1739344556661.pdf", urlText:"基隆市政府——圓夢貸款申請檢核表（PDF）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.city==="keelung") ok.push("公司登記於基隆市"); else no.push("須登記於基隆市");
+        if(l.amount <= 100) ok.push("需求金額在每案 100 萬元額度內"); else fix.push("每案上限 100 萬元；負責人 18–45 歲者通過後得就 200 萬元額度申請利息補貼，超出部分需搭配其他貸款");
+        fix.push("本項部分規格待複核：利率、期限與保證成數以主管機關公告為準");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L13", name:"嘉義市青年創業及中小企業貸款", agency:"嘉義市政府",
+      capWan:200, capText:"第一類 100 萬元、第二類 200 萬元",
+      rateText:"上限郵儲 +1.45%，無利息補貼",
+      termText:"最長 7 年（含寬限 6 個月）",
+      guarText:"9.5 成，手續費年費率 0.375%，銀行得徵提一名連帶保證人",
+      desc:"第一類負責人設籍嘉義市 20–45 歲、事業登記嘉義市未逾 5 年、創業課程 12 小時；第二類登記嘉義市之中小企業。",
+      docs:["申請表","登記證明","切結書","身分證影本","事業計畫書","聯徵報告","課程證明（逾 5 年免附）"],
+      url:"https://law.chiayi.gov.tw/LawContent.aspx?id=GL000478", urlText:"嘉義市青年創業及中小企業貸款要點（嘉義市法規）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.city==="chiayi-city") ok.push("事業登記於嘉義市"); else no.push("事業須登記於嘉義市");
+        if(l.amount <= 200) ok.push("需求金額在第二類 200 萬元額度內（第一類上限 100 萬元）"); else fix.push("需求超過第二類 200 萬元上限");
+        ok.push("第一類另須負責人設籍嘉義市、20–45 歲、登記未逾 5 年且創業課程 12 小時；第二類為登記嘉義市之中小企業，類別由審查核定");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L14", name:"高雄市青年創業貸款（含青創雄挺利利息補貼）", agency:"高雄市政府青年局",
+      capWan:400, capText:"公司／商業單次最高 200 萬元、小規模商業 50 萬元，累計最高 400 萬元",
+      rateText:"上限郵儲 +1.155%；歸戶 200 萬元以內、年利率上限 2.5%、最長 5 年利息補貼",
+      termText:"最長 7 年（寬限最長 1 年）",
+      guarText:"依信保基金規定",
+      desc:"登記高雄市、設立未滿 5 年、資本額 1,000 萬元以下，負責人設籍高雄市 3 個月以上、18–45 歲，創業課程 20 小時，非金融／保險／特殊娛樂。",
+      docs:["申請表","創業計畫書","切結書","聯徵同意書","身分證明","登記證明","保證書","課程證明"],
+      url:"https://outlaw.kcg.gov.tw/LawContent.aspx?media=print&id=GL001709", urlText:"高雄市青年創業貸款要點（高雄市法規）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.city==="kaohsiung") ok.push("公司登記於高雄市"); else no.push("須登記於高雄市");
+        if(l.residence==="kaohsiung") ok.push("負責人設籍高雄市"); else no.push("負責人須設籍高雄市 3 個月以上");
+        if(p.years < 5) ok.push("設立未滿 5 年"); else no.push("限設立未滿 5 年");
+        if(p.capital <= 1000) ok.push("資本額 1,000 萬元以下"); else no.push("資本額須在 1,000 萬元以下");
+        if(l.age >= 18 && l.age <= 45) ok.push("負責人年齡 18–45 歲"); else no.push("負責人年齡須在 18–45 歲");
+        if(l.course >= 20) ok.push("創業課程已達 20 小時"); else if(!no.length) fix.push("須先完成創業課程 20 小時");
+        if(l.amount <= 200) ok.push("需求金額在單次 200 萬元額度內"); else if(l.amount <= 400) fix.push("需求逾單次 200 萬元，累計最高 400 萬元，請向青年局確認分次方式"); else fix.push("需求超過累計最高 400 萬元");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L15", name:"金門縣中小企業及青年創業信用保證融資貸款", agency:"金門縣政府",
+      capWan:500, capText:"青創最高 100 萬元、一般最高 500 萬元",
+      rateText:"青創郵儲 +0.575%（利息由縣府基金全額補貼）、一般 +1.45%",
+      termText:"最長 7 年（寬限最長 2 年）",
+      guarText:"9 成，負責人連帶保證",
+      desc:"登記金門縣且符合中小企業認定；青創另須設立未滿 5 年、負責人 20–45 歲設籍金門、創業課程 20 小時、未曾申請本貸款或受其他創業貸款利息補助。",
+      docs:["申請表","身分證影本","事業計畫書","切結書","登記證明","聯徵報告","欠稅查復證明"],
+      url:"https://law.kinmen.gov.tw/LawContent.aspx?id=GL000445", urlText:"金門縣信用保證融資貸款要點（金門縣法規）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.city==="kinmen") ok.push("公司登記於金門縣"); else no.push("須登記於金門縣且符合中小企業認定");
+        if(l.amount <= 500) ok.push("需求金額在一般最高 500 萬元內（青創單項上限 100 萬元）"); else fix.push("需求超過一般最高 500 萬元上限");
+        ok.push("青創類別另須設立未滿 5 年、負責人 20–45 歲設籍金門且完成創業課程 20 小時");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L16", name:"原住民族綜合發展基金貸款", agency:"原住民族委員會",
+      capWan:2000, capText:"開辦費最高 200 萬元、週轉金 500 萬元、資本支出 2,000 萬元（農林漁牧資本支出 5,000 萬元）；保留地貸款（2026 新制）週轉最高 500 萬元、資本最高 1,000 萬元",
+      rateText:"保留地貸款利率 4%、借款人負擔 2.72%、差額 1.28% 由原民會補貼",
+      termText:"依要點規定",
+      guarText:"最高 95%（保留地貸款）",
+      desc:"18–65 歲原住民以事業登記負責人名義申辦，登記後 12 個月內或已有經營事實，創業輔導課程 20 小時或 2 學分。",
+      docs:["事業貸款計畫申請書","身分證明","登記證明","課程證明"],
+      url:"https://www.cip.gov.tw/data/news/202510/T-30150056.pdf", urlText:"原住民族委員會——原民綜合發展基金貸款文件（PDF）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.identity === "indigenous") ok.push("負責人具原住民身分，符合核心資格"); else no.push("限 18–65 歲原住民以事業登記負責人名義申辦——你目前的特殊身分未符合");
+        if(l.age >= 18 && l.age <= 65) ok.push("負責人年齡 18–65 歲"); else no.push("負責人年齡須在 18–65 歲");
+        if(l.course >= 20) ok.push("創業輔導課程已達 20 小時"); else if(!no.length) fix.push("須先完成創業輔導課程 20 小時（或 2 學分）");
+        var cap = l.purpose === "capital" ? 2000 : (l.purpose === "startup" ? 200 : 500);
+        if(l.amount <= cap) ok.push("需求金額在分項額度內"); else if(!no.length) fix.push("需求超過分項上限（開辦費 200 萬／週轉 500 萬／資本 2,000 萬元）");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L17", name:"客庄地方創生優惠貸款", agency:"客家委員會",
+      capWan:1000, capText:"計畫所需資金 8 成為限，合計最高 1,000 萬元（週轉 500 萬元、資本 1,000 萬元）",
+      rateText:"前 3 年利息由客委會全額補貼",
+      termText:"依要點規定",
+      guarText:"最高 9 成",
+      desc:"負責人為設籍國內國民；公司／有限合夥／商業登記之中小企業，登記地址位於客家文化重點發展區並實際經營客家文化／在地特色產業（非金融／保險／特殊娛樂），每事業限申請一次。",
+      docs:["事業計畫書","登記證明","身分及戶籍證明","重點發展區營業證明","財務及徵授信資料"],
+      url:"https://law.hakka.gov.tw/LawContent.aspx?media=print&id=GL000014", urlText:"客庄地方創生優惠貸款要點（客委會法規）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.identity === "hakka") ok.push("位於客家文化重點發展區，符合地區資格方向"); else no.push("登記地址須位於客家文化重點發展區並實際經營客家文化／在地特色產業——你目前的特殊身分未符合");
+        var cap = l.purpose === "capital" ? 1000 : 500;
+        if(l.amount <= cap) ok.push("需求金額在分項額度內"); else if(!no.length) fix.push("需求超過分項上限（週轉 500 萬／資本 1,000 萬元，合計最高 1,000 萬元）");
+        ok.push("提醒：每事業限申請一次");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L18", name:"農民組織及農企業產銷經營及研發創新貸款", agency:"農業部",
+      capWan:5000, capText:"每借款人最高 5,000 萬元（週轉 1,000 萬元、契作關係者 2,000 萬元）；資本支出以實際所需 70% 為限；加計負責人政策性農業貸款餘額上限 8,000 萬元",
+      rateText:"依政策性農業專案貸款辦法，農業發展基金給予利息差額補貼",
+      termText:"資本支出最長 15 年（寬緩 3 年）；週轉最長 5 年（寬緩 2 年）",
+      guarText:"擔保不足送農業信用保證基金",
+      desc:"農民組織及符合中小企業認定之農企業，具契作核定／業界科專／智慧農業補助／驗證等 12 款資格之一，產銷經營計畫須經輔導機關核定。",
+      docs:["核定經營計畫書","資格佐證","切結書","資本支出支付憑證"],
+      url:"https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=M0070066", urlText:"政策性農業專案貸款相關法規（全國法規資料庫）",
+      check:function(p,l){
+        var ok=[], fix=[], no=[], special=false;
+        if(p.industry === "agriculture") ok.push("屬農企業範疇，符合計畫對象方向"); else no.push("限農民組織及符合中小企業認定之農企業，你的產業不在範圍內");
+        if(l.amount <= 5000) ok.push("需求金額在每借款人 5,000 萬元上限內（週轉分項上限另計）"); else fix.push("需求超過每借款人 5,000 萬元上限");
+        if(p.industry === "agriculture") fix.push("另須具 12 款資格之一且產銷經營計畫經輔導機關核定，工具無法判定，請對照官方資格確認");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L19", name:"臺企銀享 e 貸／微企享 e 貸", agency:"臺灣中小企業銀行",
+      capWan:null, capText:"額度／利率／年限：官方頁面數字無法取得，以官網為準",
+      rateText:"線上申貸通道，線上申請、專人聯繫後續徵授信（數字以官網為準）",
+      termText:"依銀行規定（官方頁面數字無法取得，以官網為準）",
+      guarText:"依銀行規定",
+      desc:"依法登記之中小企業及微型企業。",
+      docs:["依臺企銀線上申貸頁面及徵授信規定"],
+      url:"https://www.tbb.com.tw", urlText:"臺灣中小企業銀行官網",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        fix.push("銀行線上申貸通道無公開統一資格表：額度、利率與年限以官網及銀行徵授信審查為準，建議先線上送件或洽專人");
+        ok.push("依法登記之中小企業及微型企業可透過本通道申辦");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L20", name:"中小企業信用保證基金－一般保證", agency:"中小企業信用保證基金", channel:"guarantee",
+      capWan:null, capText:"同一企業保證融資總額度最高 1.2 億元（保證通道，非貸款本體）",
+      rateText:"保證手續費依信保基金計收要點",
+      termText:"非貸款本體，由金融機構移送",
+      guarText:"最高 9 成（政策貸款要點另有較高成數者從其規定）",
+      desc:"符合中小企業認定標準之企業，經往來金融機構評估後移送。本項為保證通道，性質不同於貸款本體：企業向銀行申貸、由信保基金提供信用保證。",
+      docs:["登記證明","財務報表","身分證明","聯徵同意書","貸款計畫書（企業端）"],
+      url:"https://www.smeg.org.tw", urlText:"中小企業信用保證基金官網",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.capital <= 10000 || p.employees < 200) ok.push("符合中小企業認定規模，可經往來金融機構評估後移送保證"); else no.push("限符合中小企業認定標準之企業");
+        fix.push("保證通道提醒：本項不是貸款本身，須先向金融機構申貸，再由金融機構移送信保基金保證");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L21", name:"中小企業信用保證基金－批次信用保證", agency:"中小企業信用保證基金", channel:"guarantee",
+      capWan:null, capText:"同一企業保證融資總額度最高 2 億元（保證通道，非貸款本體）",
+      rateText:"保證手續費年費率 0.2%–1.2%",
+      termText:"非貸款本體，金融機構以批號方式辦理",
+      guarText:"最高 10 成",
+      desc:"符合信保基金保證對象要點之中小企業（常與青年創業貸款搭配，100 萬元以下案件常用）。本項為保證通道，性質不同於貸款本體。",
+      docs:["由承貸銀行辦理，企業端備齊登記證明、財報、聯徵同意書"],
+      url:"https://www.smeg.org.tw", urlText:"中小企業信用保證基金官網",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        if(p.capital <= 10000 || p.employees < 200) ok.push("符合中小企業規模，屬信保基金保證對象方向"); else no.push("限符合信保基金保證對象要點之中小企業");
+        fix.push("保證通道提醒：本項不是貸款本身，由承貸銀行以批號方式辦理，常與青年創業貸款搭配");
+        return {ok:ok, fix:fix, no:no};
+      }
+    },
+    {
+      id:"L22", name:"馬上辦服務中心", agency:"經濟部中小及新創企業署", channel:"assist",
+      capWan:null, capText:"非貸款：免費提供融資診斷、債權協商、顧問諮詢、資格認定證明，協助媒合政策性貸款",
+      rateText:"週一至週五 08:30–18:00，專線 0800-280-280",
+      termText:"非貸款本體",
+      guarText:"不適用",
+      desc:"中小企業（免費）。本項為融資協助通道，性質不同於貸款本體：提供諮詢與媒合協助，不直接核貸。",
+      docs:["無（諮詢服務）"],
+      url:"https://0800280280.sme.gov.tw/sme_book/loan.php", urlText:"馬上辦服務中心——融資協助專區",
+      check:function(p,l){
+        var ok=[], fix=[], no=[];
+        ok.push("中小企業可免費使用融資診斷、顧問諮詢與政策性貸款媒合協助");
+        fix.push("融資協助通道提醒：本項不是貸款本身，不直接核貸，適合送件前先做融資診斷");
+        return {ok:ok, fix:fix, no:no};
+      }
+    }
+    ];
+
+    var loanState = { filter:"all" };
+    function renderLoans(){
+      var p = profile(); var l = loanInputs();
+      $("loan-total").textContent = LOANS.length;
+      var results = LOANS.map(function(x){
+        var chk = x.check(p, l);
+        var tier = chk.no.length ? "no" : (chk.fix.length ? "mid" : "ok");
+        return {x:x, chk:chk, tier:tier};
+      });
+      var order = {ok:0, mid:1, no:2};
+      results.sort(function(a,b){
+        if(order[a.tier] !== order[b.tier]) return order[a.tier] - order[b.tier];
+        return (b.x.capWan||0) - (a.x.capWan||0);
+      });
+      var okCount = results.filter(function(r){return r.tier==="ok";}).length;
+      var midCount = results.filter(function(r){return r.tier==="mid";}).length;
+      var bestCap = results.filter(function(r){return r.tier==="ok";}).reduce(function(m,r){ return Math.max(m, r.x.capWan||0); }, 0);
+      $("cnt-loan").textContent = okCount + " 項符合";
+      $("loan-summary").innerHTML =
+        '<div class="stat"><div class="n">' + okCount + ' 項</div><div class="t">資格符合可送件</div></div>' +
+        '<div class="stat"><div class="n">' + midCount + ' 項</div><div class="t">可能符合／補件後符合</div></div>' +
+        '<div class="stat"><div class="n">' + (bestCap ? '最高 ' + bestCap.toLocaleString() + ' 萬元' : '—') + '</div><div class="t">符合項目中的最高單項額度（你的需求 ' + l.amount.toLocaleString() + ' 萬元）</div></div>';
+      var shown = results.filter(function(r){ return loanState.filter==="all" || r.tier===loanState.filter; });
+      if(!shown.length){ $("loan-results").innerHTML = '<div class="card empty">這個分類目前沒有項目，換個篩選或調整條件試試。</div>'; return; }
+      $("loan-results").innerHTML = shown.map(function(r){
+        var x = r.x;
+        var badge = r.tier==="ok" ? '<span class="badge b-ok">符合</span>' : (r.tier==="mid" ? '<span class="badge b-mid">可能符合／補件後符合</span>' : '<span class="badge b-no">不符合</span>');
+        var lis = r.chk.ok.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("") +
+                  r.chk.fix.map(function(t){ return "<li>待補：" + esc(t) + "</li>"; }).join("") +
+                  r.chk.no.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("");
+        var reasons = lis ? '<div class="reasons"><ul>' + lis + "</ul></div>" : "";
+        var docs = x.docs.map(function(d){ return "<li>" + esc(d) + "</li>"; }).join("");
+        var channelNote = x.channel === "guarantee" ? '<div class="channel-note">保證通道：性質不同於貸款本體——由信保基金提供信用保證，仍須向金融機構申貸。</div>' : (x.channel === "assist" ? '<div class="channel-note">融資協助通道：性質不同於貸款本體——提供免費融資診斷與媒合協助，不直接核貸。</div>' : "");
+        var pendingNote = x.pending ? '<div class="pending-note">部分待複核：本項部分規格（利率／期限／保證成數）官方要點全文未查得，已如實標註，申請前請以主管機關公告為準。</div>' : "";
+        return '<article class="card' + (r.tier==="no" ? " dim" : "") + '">' +
+          '<div class="card-head"><div><h3>' + esc(x.id) + ' ' + esc(x.name) + '</h3><div class="agency">' + esc(x.agency) + '</div></div>' + badge + '</div>' +
+          channelNote + pendingNote +
+          '<div class="amount">' + esc(x.capText) + '</div>' +
+          '<dl class="grid2">' +
+          '<div><dt>利率／利息補貼</dt><dd>' + esc(x.rateText) + '</dd></div>' +
+          '<div><dt>年限與寬限期</dt><dd>' + esc(x.termText) + '</dd></div>' +
+          '<div><dt>信用保證／擔保</dt><dd>' + esc(x.guarText) + '</dd></div>' +
+          '<div><dt>你的需求</dt><dd>' + l.amount.toLocaleString() + ' 萬元・' + (l.purpose==="capital" ? "設備購置／資本支出" : (l.purpose==="startup" ? "創業啟動" : "營運週轉")) + '</dd></div>' +
+          '</dl>' +
+          '<p class="desc"><b>資格摘要（適用對象）</b>' + esc(x.desc) + '</p>' + reasons +
+          '<details><summary>應備文件（' + x.docs.length + ' 項）</summary><ul>' + docs + '</ul></details>' +
+          '<a class="official" href="' + x.url + '" target="_blank" rel="noopener">官方連結：' + esc(x.urlText) + ' →</a>' +
+          '<div class="verify-line">查證日期：2026-10-20</div>' +
+          '</article>';
+      }).join("");
+    }
+
+    /* ================= 互動接線 ================= */
+    /* 負責人設籍縣市與登記縣市共用同一份 22 縣市清單 */
+    $("s-residence").innerHTML = $("s-city").innerHTML;
+    $("s-residence").value = "taipei";
+
+    function renderAll(){ renderSubsidies(); renderLoans(); }
+    var subForm = $("subsidy-form"), loanForm = $("loan-form");
+    subForm.addEventListener("input", renderAll); subForm.addEventListener("change", renderAll);
+    loanForm.addEventListener("input", renderAll); loanForm.addEventListener("change", renderAll);
+    document.querySelectorAll("#s-needs .chip").forEach(function(ch){
+      ch.addEventListener("click", function(){
+        ch.setAttribute("aria-pressed", ch.getAttribute("aria-pressed")==="true" ? "false" : "true");
+        renderSubsidies();
+      });
+    });
+    $("f-region").addEventListener("change", function(){ subState.region = $("f-region").value; renderSubsidies(); });
+    $("f-need").addEventListener("change", function(){ subState.need = $("f-need").value; renderSubsidies(); });
+    function wireFilters(boxId, state, render){
+      document.querySelectorAll("#" + boxId + " .fbtn").forEach(function(b){
+        b.addEventListener("click", function(){
+          document.querySelectorAll("#" + boxId + " .fbtn").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+          b.setAttribute("aria-pressed","true"); state.filter = b.getAttribute("data-f"); render();
+        });
+      });
+    }
+    wireFilters("subsidy-filters", subState, renderSubsidies);
+    wireFilters("loan-filters", loanState, renderLoans);
+    function setProfileSample(){
+      $("s-type").value = "company"; $("s-city").value = "taipei"; $("s-industry").value = "service";
+      $("s-years").value = 3; $("s-employees").value = 3; $("s-capital").value = 80; $("s-revenue").value = 1600;
+      $("s-age").value = 30; $("s-gender").value = "any"; $("s-residence").value = "taipei";
+      $("s-identity").value = "none"; $("s-course").value = "no";
+    }
+    $("s-sample").addEventListener("click", function(){ setProfileSample(); renderAll(); });
+    $("l-sample").addEventListener("click", function(){
+      setProfileSample();
+      $("l-amount").value = 200; $("l-purpose").value = "working"; $("l-collateral").value = "guarantor";
+      $("l-innovation").value = "no"; $("l-transform").value = "no";
+      renderAll();
+    });
+    function switchTab(which){
+      var isSub = which === "subsidy";
+      $("tab-subsidy").setAttribute("aria-selected", isSub ? "true" : "false");
+      $("tab-loan").setAttribute("aria-selected", isSub ? "false" : "true");
+      $("pane-subsidy").classList.toggle("hidden", !isSub);
+      $("pane-loan").classList.toggle("hidden", isSub);
+    }
+    $("tab-subsidy").addEventListener("click", function(){ switchTab("subsidy"); });
+    $("tab-loan").addEventListener("click", function(){ switchTab("loan"); });
+    renderAll();
+    </script>
+  </body>
+</html>
