@@ -26,6 +26,8 @@
   .big small { font-size: 18px; font-weight: 600; }
   .line { border-top: 1px dashed #ddd; margin: 12px 0; }
   .ok { color: #1a7f4b; } .warn { color: #b45309; } .bad { color: #b91c1c; }
+  .brand-line { font-size: 13px; font-weight: 900; letter-spacing: .22em; color: #1a7f4b; margin: 0 0 8px; }
+  .brand-line span { color: #b7791f; letter-spacing: .05em; margin-left: 8px; font-weight: 700; }
   .note { font-size: 13px; color: #666; }
   a { color: #1a7f4b; }
   .err { background: #fdecea; border: 1px solid #f0b8b2; color: #b91c1c; border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px; display: none; }
@@ -33,6 +35,7 @@
 </head>
 <body>
 <div class="wrap">
+  <p class="brand-line">UR CAPITAL<span>出品</span></p>
   <h1>租屋補貼試算器</h1>
   <div class="sub">115年度・300億元中央擴大租金補貼｜輸入條件，算出每月大概能領多少</div>
   <div class="banner">⏰ 115年度受理至 <b>2026年12月31日下午5時</b>止，隨到隨辦。今年還沒申請的，年底前都可以遞件。</div>
@@ -106,9 +109,13 @@
       <option value="c1">育有未成年子女1人</option>
       <option value="c2">育有未成年子女2人</option>
       <option value="c3">育有未成年子女3人以上</option>
+      <option value="c4">育有未成年子女4人</option>
+      <option value="c5">育有未成年子女5人以上</option>
       <option value="n1">2026年起新生兒1人</option>
       <option value="n2">2026年起新生兒2人</option>
       <option value="n3">2026年起新生兒3人以上</option>
+      <option value="n4">2026年起新生兒4人</option>
+      <option value="n5">2026年起新生兒5人以上</option>
     </select>
     <div class="hint">加碼倍數取最高一項，不累加。</div>
   </div>
@@ -119,7 +126,7 @@
     <input type="number" id="rent" min="1" placeholder="例如：12000">
     <label class="field" for="income">家庭年所得（元，選填，僅供提醒用）</label>
     <input type="number" id="income" min="0" placeholder="例如：800000">
-    <div class="hint">所得門檻各縣市不同，第一版不以所得擋下申請，請自行對照官方附表。</div>
+    <div class="hint">審查以財稅機關最近一年度綜合所得為準；115年7月1日後申請者採114年度所得，請以114年度家庭所得填寫。平均每人每月所得＝家庭年所得÷12÷家庭成員人數，須低於該市115年度上限。</div>
   </div>
 
   <div class="card">
@@ -142,6 +149,7 @@
     <div id="rBreak"></div>
     <div class="line"></div>
     <div id="rElig"></div>
+    <div id="rLocalWrap" style="display:none;"><div class="line"></div><div id="rLocal"></div></div>
     <div class="line"></div>
     <div><b>下一步</b></div>
     <div>1. 115年度受理至2026年12月31日下午5時，隨到隨辦，別拖到最後一天。<br>
@@ -153,7 +161,7 @@
   </div>
 
   <div class="card">
-    <div class="note">資料來源：內政部國土管理署115年度300億元中央擴大租金補貼公告金額表；加碼倍數依公告擇高原則（同時符合多項取最高，不累加，且不超過實際租金）。本工具由 UR Capital 製作。</div>
+    <div class="note">資料來源：內政部國土管理署115年度300億元中央擴大租金補貼公告金額表與115年度申請書（所得上限為申請書各縣市表）；加碼倍數依公告擇高原則（同時符合多項取最高，不累加，且不超過實際租金）；地方加碼依各市府115／116年度公告（台北幸福租、新北青年、台中育兒、高雄育兒）。本工具由 UR Capital 製作。</div>
   </div>
 </div>
 
@@ -206,16 +214,72 @@ function multipliersOf(o) {
   if (o.children === 'c1') list.push(['育有未成年子女1人', 1.4]);
   if (o.children === 'c2') list.push(['育有未成年子女2人', 1.6]);
   if (o.children === 'c3') list.push(['育有未成年子女3人以上', 1.8]);
+  if (o.children === 'c4') list.push(['育有未成年子女4人', 2.0]);
+  if (o.children === 'c5') list.push(['育有未成年子女5人以上', 2.2]);
   if (o.children === 'n1') list.push(['2026年起新生兒1人', 2.0]);
   if (o.children === 'n2') list.push(['2026年起新生兒2人', 2.5]);
   if (o.children === 'n3') list.push(['2026年起新生兒3人以上', 3.0]);
+  if (o.children === 'n4') list.push(['2026年起新生兒4人', 3.5]);
+  if (o.children === 'n5') list.push(['2026年起新生兒5人以上', 4.0]);
   if (o.econ === 'low' || o.econ === 'midlow') list.push(['經濟弱勢（低收／中低收）', 1.4]);
   if (o.socialWeak) list.push(['社會弱勢', 1.2]);
   const m = list.length ? Math.max.apply(null, list.map(function (x) { return x[1]; })) : 1.0;
   return { list: list, m: m };
 }
 
-// 主計算：回傳 { error } 或 { tier, base, multList, mult, gross, amount, group }
+// 115年度申請書各縣市每人每月平均所得上限（元，須低於）
+const INCOME_LIMITS_115 = {
+  '台北市': 61137, '新北市': 50700, '桃園市': 50304, '台中市': 48231,
+  '台南市': 46545, '高雄市': 48120, '金門縣': 43023, '連江縣': 43023
+};
+function incomeLimitFor(city) {
+  return INCOME_LIMITS_115[city] || 46545;
+}
+function childCountOf(children) {
+  const m = { 'c1': 1, 'c2': 2, 'c3': 3, 'c4': 4, 'c5': 5, 'n1': 1, 'n2': 2, 'n3': 3, 'n4': 4, 'n5': 5 };
+  return m[children] || 0;
+}
+
+// 地方加碼：回傳 { lines, taipeiMonthly, nyAmount }
+function localAddons(o, r) {
+  const lines = [];
+  let taipeiMonthly = 0;
+  let nyAmount = 0;
+  const kids = childCountOf(o.children);
+  if (o.city === '台北市') {
+    if (o.members === 1 && o.under40) { lines.push('單身青年：每月另加 1,000 元'); taipeiMonthly += 1000; }
+    if (o.newlywed !== 'none' && o.children === 'none') {
+      if (o.under40) { lines.push('已婚青年家庭：每月另加 2,500 元（須45歲以下、夫妻設籍台北、無子女）'); taipeiMonthly += 2500; }
+      else { lines.push('已婚青年家庭（45歲以下）：每月另加 2,500 元，若你未滿45歲可申請（須夫妻設籍台北、無子女）'); }
+    }
+    if (kids > 0) { const est = kids * 1000; lines.push('育兒家庭：每名0-12歲子女每月另加 1,000 元（以你填的子女數估算：' + kids + '名約 ' + fmt(est) + ' 元／月，實際以0-12歲人數為準）'); taipeiMonthly += est; }
+    if (taipeiMonthly > 0) {
+      lines.push('中央＋市府合計約 ' + fmt(r.amount + taipeiMonthly) + ' 元／月');
+      lines.push('<span class="note">台北幸福租須先取得中央核准，且設籍並租屋於台北市；受理至2027年3月31日，經費用完提前停收；諮詢專線(02)2777-2186。</span>');
+    }
+  }
+  if (o.city === '新北市' && o.under40) {
+    if (kids > 0) nyAmount = kids === 1 ? 5000 : (kids === 2 ? 6000 : 7000);
+    else if (o.newlywed !== 'none') nyAmount = 4500;
+    else if (o.members === 1) nyAmount = 3500;
+    if (nyAmount > 0) {
+      const higher = nyAmount > r.amount ? '新北青年較高' : (r.amount > nyAmount ? '中央較高' : '兩者相同');
+      lines.push('新北青年（116年度）：每月 ' + fmt(nyAmount) + ' 元，只能與中央擇一，不可同領；你目前中央試算 ' + fmt(r.amount) + ' 元／月，' + higher + '。');
+      lines.push('<span class="note">新北青年受理至2027年12月31日，經費用完提前停收；所得條件為家庭年收入低於145萬元、每人每月平均收入低於62,125元（116年度）；線上申請：https://nths.ntpc.gov.tw/FC/FC300</span>');
+    }
+  }
+  if (o.city === '台中市' && kids > 0) {
+    lines.push('台中育兒：每名12歲以下子女每年4,000元，一次發放，可與中央併領（以你填的子女數估算：' + kids + '名約 ' + fmt(kids * 4000) + ' 元／年，實際以12歲以下人數為準）。');
+    lines.push('<span class="warn">台中育兒經費即將用罄，請儘速確認；中央舊戶免紙本但須回覆確認信。</span>');
+  }
+  if (o.city === '高雄市' && kids > 0) {
+    lines.push('高雄育兒：每年1名子女4,000元起；2名子女且含0～2歲者18,000元；3名以上且含0～2歲者36,000元；子女設籍高雄滿10個月每名另加2,000元（出生即設籍不受限）。');
+    lines.push('<span class="note">可與中央併領；須為租補核定戶且公告當月有撥款紀錄，確認信核發次日起3週內回覆；條件為每人每月平均所得56,140元以下、月租不超過4萬元。</span>');
+  }
+  return { lines: lines, taipeiMonthly: taipeiMonthly, nyAmount: nyAmount };
+}
+
+// 主計算：回傳 { error } 或 { tier, base, multList, mult, gross, amount, group, income, local }
 function compute(o) {
   if (!o.rent || o.rent <= 0) return { error: '請填寫每月實際租金。' };
   if (!o.members || o.members < 1) return { error: '請填寫家庭成員人數。' };
@@ -227,7 +291,15 @@ function compute(o) {
   const mm = multipliersOf(o);
   const gross = Math.round(base * mm.m);
   const amount = Math.min(gross, o.rent);
-  return { tier: tier, base: base, multList: mm.list, mult: mm.m, gross: gross, amount: amount, group: group };
+  const limit = incomeLimitFor(o.city);
+  let income = { status: 'unknown', avg: null, limit: limit };
+  if (o.income && o.income > 0) {
+    const avg = Math.round(o.income / 12 / o.members);
+    const isMarriageChild = (o.newlywed !== 'none' || o.children !== 'none');
+    income = { status: avg < limit ? 'pass' : (isMarriageChild ? 'maybe' : 'fail'), avg: avg, limit: limit };
+  }
+  const local = localAddons(o, { amount: amount });
+  return { tier: tier, base: base, multList: mm.list, mult: mm.m, gross: gross, amount: amount, group: group, income: income, local: local };
 }
 
 function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
@@ -295,9 +367,25 @@ if (typeof document !== 'undefined') {
     } else {
       eligHtml += '<span class="warn">以下項目你尚未勾選，金額僅供參考，請先確認：' + missing.join('、') + '。</span>';
     }
-    eligHtml += '<br><span class="note">所得門檻：各縣市門檻不同，第一版不以所得擋下申請，請對照官方附表。' +
-      (o.income ? '你填的家庭年所得：' + fmt(o.income) + ' 元。' : '你未填寫家庭年所得。') + '</span>';
+    eligHtml += '<br>';
+    if (r.income.status === 'pass') {
+      eligHtml += '<span class="ok">✔ 所得：平均每人每月約 ' + fmt(r.income.avg) + ' 元，低於' + o.city + '115年度上限 ' + fmt(r.income.limit) + ' 元，通過。</span>';
+    } else if (r.income.status === 'fail') {
+      eligHtml += '<span class="bad">✘ 所得：平均每人每月約 ' + fmt(r.income.avg) + ' 元，未低於' + o.city + '115年度上限 ' + fmt(r.income.limit) + ' 元，中央補貼可能因所得不符被駁回。</span>';
+    } else if (r.income.status === 'maybe') {
+      eligHtml += '<span class="warn">△ 所得：平均每人每月約 ' + fmt(r.income.avg) + ' 元，未低於一般標準 ' + fmt(r.income.limit) + ' 元，但新婚、育兒家庭另有放寬標準，請對照115年度公報附表確認。</span>';
+    } else {
+      eligHtml += '<span class="note">所得：你未填寫家庭年所得，無法判斷所得門檻。平均每人每月所得＝家庭年所得÷12÷家庭成員人數，須低於' + o.city + '115年度上限 ' + fmt(r.income.limit) + ' 元。</span>';
+    }
+    eligHtml += '<br><span class="note">審查以財稅機關最近一年度綜合所得為準；115年7月1日後申請者採114年度所得。另有財產限制，詳見官方規定。</span>';
     document.getElementById('rElig').innerHTML = eligHtml;
+    const localWrap = document.getElementById('rLocalWrap');
+    if (r.local.lines.length > 0) {
+      document.getElementById('rLocal').innerHTML = '<b>地方加碼另外看</b><br>' + r.local.lines.join('<br>') + '<br><span class="note">地方加碼另計，不包含在上方每月試算內（台北、新北為每月；台中、高雄為每年一次）。</span>';
+      localWrap.style.display = 'block';
+    } else {
+      localWrap.style.display = 'none';
+    }
     document.getElementById('result').style.display = 'block';
     document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
   });
