@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>租屋補貼試算器｜115年度 中央300億</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif; background: #f6f4ef; color: #222; line-height: 1.6; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 8px 0 4px; }
+  .sub { color: #666; font-size: 14px; margin-bottom: 12px; }
+  .banner { background: #fff3d6; border: 1px solid #e8c87a; border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .card h2 { font-size: 16px; margin: 0 0 10px; }
+  label.field { display: block; font-size: 14px; margin: 10px 0 4px; font-weight: 600; }
+  select, input[type="number"] { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; background: #fff; }
+  .radios label, .checks label { display: block; font-size: 15px; padding: 6px 0; }
+  .radios input, .checks input { margin-right: 8px; transform: scale(1.2); }
+  .hint { font-size: 13px; color: #777; margin-top: 4px; }
+  button.main { width: 100%; padding: 14px; font-size: 18px; border: none; border-radius: 10px; background: #1a7f4b; color: #fff; cursor: pointer; }
+  button.main:active { background: #14663c; }
+  button.sub2 { width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 10px; background: #fff; cursor: pointer; margin-top: 10px; }
+  #result { display: none; }
+  .big { font-size: 40px; font-weight: 800; color: #1a7f4b; margin: 4px 0; }
+  .big small { font-size: 18px; font-weight: 600; }
+  .line { border-top: 1px dashed #ddd; margin: 12px 0; }
+  .ok { color: #1a7f4b; } .warn { color: #b45309; } .bad { color: #b91c1c; }
+  .note { font-size: 13px; color: #666; }
+  a { color: #1a7f4b; }
+  .err { background: #fdecea; border: 1px solid #f0b8b2; color: #b91c1c; border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px; display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>租屋補貼試算器</h1>
+  <div class="sub">115年度・300億元中央擴大租金補貼｜輸入條件，算出每月大概能領多少</div>
+  <div class="banner">⏰ 115年度受理至 <b>2026年12月31日下午5時</b>止，隨到隨辦。今年還沒申請的，年底前都可以遞件。</div>
+
+  <div id="errBox" class="err"></div>
+
+  <div class="card">
+    <h2>一、租屋地點</h2>
+    <label class="field" for="city">租屋在哪個縣市</label>
+    <select id="city">
+      <option value="台北市">台北市</option>
+      <option value="新北市">新北市</option>
+      <option value="桃園市">桃園市</option>
+      <option value="新竹縣">新竹縣</option>
+      <option value="新竹市">新竹市</option>
+      <option value="台中市">台中市</option>
+      <option value="台南市">台南市</option>
+      <option value="高雄市">高雄市</option>
+      <option value="宜蘭縣">宜蘭縣</option>
+      <option value="基隆市">基隆市</option>
+      <option value="苗栗縣">苗栗縣</option>
+      <option value="彰化縣">彰化縣</option>
+      <option value="南投縣">南投縣</option>
+      <option value="雲林縣">雲林縣</option>
+      <option value="嘉義縣">嘉義縣</option>
+      <option value="嘉義市">嘉義市</option>
+      <option value="屏東縣">屏東縣</option>
+      <option value="台東縣">台東縣</option>
+      <option value="花蓮縣">花蓮縣</option>
+      <option value="澎湖縣">澎湖縣</option>
+      <option value="金門縣">金門縣</option>
+      <option value="連江縣">連江縣</option>
+    </select>
+    <div id="areaBox" style="display:none;">
+      <label class="field">行政區組別（同縣市不同行政區金額不同）</label>
+      <div class="radios">
+        <label><input type="radio" name="area" value="main">主要行政區</label>
+        <label><input type="radio" name="area" value="other">其他行政區</label>
+      </div>
+      <div id="areaHint" class="hint"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>二、家庭狀況</h2>
+    <label class="field" for="members">家庭成員人數（申請人＋配偶＋未成年子女等，依規定認定）</label>
+    <input type="number" id="members" min="1" max="20" value="1">
+    <label class="field">經濟身分</label>
+    <div class="radios">
+      <label><input type="radio" name="econ" value="none" checked>一般（無低收／中低收身分）</label>
+      <label><input type="radio" name="econ" value="low">低收入戶</label>
+      <label><input type="radio" name="econ" value="midlow">中低收入戶</label>
+    </div>
+    <div class="checks">
+      <label><input type="checkbox" id="socialWeak">具有社會弱勢身分（身心障礙、65歲以上長者、原住民、特殊境遇家庭等）</label>
+    </div>
+    <label class="field">申請人年齡</label>
+    <div class="radios">
+      <label><input type="radio" name="age" value="under40" checked>未滿40歲</label>
+      <label><input type="radio" name="age" value="over40">40歲以上</label>
+    </div>
+    <label class="field">新婚狀況</label>
+    <div class="radios">
+      <label><input type="radio" name="newlywed" value="none" checked>無</label>
+      <label><input type="radio" name="newlywed" value="2025">2025年底前結婚</label>
+      <label><input type="radio" name="newlywed" value="2026">2026年起結婚</label>
+    </div>
+    <label class="field" for="children">育兒狀況</label>
+    <select id="children">
+      <option value="none">無未成年子女</option>
+      <option value="c1">育有未成年子女1人</option>
+      <option value="c2">育有未成年子女2人</option>
+      <option value="c3">育有未成年子女3人以上</option>
+      <option value="n1">2026年起新生兒1人</option>
+      <option value="n2">2026年起新生兒2人</option>
+      <option value="n3">2026年起新生兒3人以上</option>
+    </select>
+    <div class="hint">加碼倍數取最高一項，不累加。</div>
+  </div>
+
+  <div class="card">
+    <h2>三、租金與所得</h2>
+    <label class="field" for="rent">每月實際租金（元，必填）</label>
+    <input type="number" id="rent" min="1" placeholder="例如：12000">
+    <label class="field" for="income">家庭年所得（元，選填，僅供提醒用）</label>
+    <input type="number" id="income" min="0" placeholder="例如：800000">
+    <div class="hint">所得門檻各縣市不同，第一版不以所得擋下申請，請自行對照官方附表。</div>
+  </div>
+
+  <div class="card">
+    <h2>四、資格確認（請逐項勾選）</h2>
+    <div class="checks">
+      <label><input type="checkbox" class="elig" id="e1">本人及家庭成員均無自有住宅</label>
+      <label><input type="checkbox" class="elig" id="e2">未同時領取其他政府住宅補貼（擇一）</label>
+      <label><input type="checkbox" class="elig" id="e3">租屋具有房屋稅籍且已保存登記（非頂樓加蓋、違建）</label>
+      <label><input type="checkbox" class="elig" id="e4">申請人已成年，且在國內設有戶籍</label>
+    </div>
+  </div>
+
+  <button class="main" id="calcBtn">開始試算</button>
+  <button class="sub2" id="resetBtn">重新填寫</button>
+
+  <div id="result" class="card">
+    <h2>試算結果</h2>
+    <div>每月約可領</div>
+    <div class="big"><small>NT$</small> <span id="rAmount"></span> <small>元</small></div>
+    <div id="rBreak"></div>
+    <div class="line"></div>
+    <div id="rElig"></div>
+    <div class="line"></div>
+    <div><b>下一步</b></div>
+    <div>1. 115年度受理至2026年12月31日下午5時，隨到隨辦，別拖到最後一天。<br>
+    2. 備妥文件：租賃契約影本、存摺封面影本（線上申辦免附申請書）。<br>
+    3. 線上申請入口：<a href="https://has.nlma.gov.tw/house300e/" target="_blank" rel="noopener">內政部國土管理署 300億租金補貼專區</a><br>
+    4. 諮詢專線：(02)7729-8003（週一至週五上午8時至下午6時）。</div>
+    <div class="line"></div>
+    <div class="note">免責：本試算僅供參考，實際金額以直轄市、縣（市）政府審核為準。地方加碼（台北幸福租、高雄增額、台中育兒、新北青年）未計入；所得門檻請對照官方附表。金額表依據115年度中央擴大租金補貼公告整理。</div>
+  </div>
+
+  <div class="card">
+    <div class="note">資料來源：內政部國土管理署115年度300億元中央擴大租金補貼公告金額表；加碼倍數依公告擇高原則（同時符合多項取最高，不累加，且不超過實際租金）。本工具由 UR Capital 製作。</div>
+  </div>
+</div>
+
+<script id="calc-script">
+// 基本補貼上限（元／月）：[第一級, 第二級, 第三級]
+const BASE = {
+  '台北市': [8000, 5000, 3000],
+  '新北市主要': [5000, 4000, 2400],
+  '新北市其他': [3600, 3200, 2000],
+  '桃園市': [5000, 4000, 2400],
+  '新竹縣': [5000, 4000, 2400],
+  '新竹市': [5000, 4000, 2400],
+  '台中市主要': [5000, 4000, 2400],
+  '台中市其他': [3600, 3200, 2000],
+  '台南市主要': [4000, 3600, 2200],
+  '台南市其他': [3600, 3200, 2000],
+  '高雄市主要': [4000, 3600, 2200],
+  '高雄市其他': [3600, 3200, 2000],
+  '其他縣市': [3600, 3200, 2000]
+};
+const SPLIT_CITIES = ['新北市', '台中市', '台南市', '高雄市'];
+const MAIN_HINT = {
+  '新北市': '主要行政區例如：板橋、三重、中和、永和、新莊、新店、土城、蘆洲、汐止、樹林、鶯歌、五股、泰山、林口、八里、淡水、三峽、深坑。其他行政區如三芝、金山、瑞芳、平溪、萬里、烏來等適用另一組金額。',
+  '台中市': '主要行政區例如：中區、北區、北屯、西區、西屯、東區、南區、南屯、大里、大雅、潭子、龍井、豐原、大甲、太平、沙鹿、烏日。其他行政區如后里、清水、梧棲、霧峰、和平等適用另一組金額。',
+  '台南市': '主要行政區例如：中西、北、安平、東、南、永康、善化、新市、安南、仁德、安定、西港、佳里、柳營、麻豆、新化、新營、歸仁、鹽水。其他行政區適用另一組金額。',
+  '高雄市': '主要行政區例如：三民、左營、前金、前鎮、苓雅、新興、楠梓、鼓山、鹽埕、鳳山、小港、旗津、大社、大寮、大樹、仁武、岡山、林園、梓官、鳥松、茄萣、湖內、路竹、旗山、橋頭、燕巢、永安、阿蓮、美濃、彌陀。其他行政區如內門、六龜、田寮、甲仙、杉林、那瑪夏、茂林、桃源適用另一組金額。'
+};
+
+function groupFor(city, area) {
+  if (city === '台北市') return '台北市';
+  if (city === '桃園市') return '桃園市';
+  if (city === '新竹縣' || city === '新竹市') return city;
+  if (SPLIT_CITIES.indexOf(city) >= 0) return city + (area === 'main' ? '主要' : '其他');
+  return '其他縣市';
+}
+
+// 級距：1 第一級，2 第二級，3 第三級
+function tierOf(members, econ, socialWeak, under40) {
+  if ((members >= 2 && econ === 'low') || (members >= 3 && econ === 'midlow')) return 1;
+  if (members === 1 && under40 && econ === 'none' && !socialWeak) return 3;
+  return 2;
+}
+
+// 加碼：回傳 { list: [[名稱, 倍數]], m: 最高倍數 }
+function multipliersOf(o) {
+  const list = [];
+  if (o.members === 1 && o.under40) list.push(['單身青年（未滿40歲）', 1.2]);
+  if (o.newlywed === '2025') list.push(['新婚（2025年底前結婚）', 1.3]);
+  if (o.newlywed === '2026') list.push(['新婚（2026年起結婚）', 1.5]);
+  if (o.children === 'c1') list.push(['育有未成年子女1人', 1.4]);
+  if (o.children === 'c2') list.push(['育有未成年子女2人', 1.6]);
+  if (o.children === 'c3') list.push(['育有未成年子女3人以上', 1.8]);
+  if (o.children === 'n1') list.push(['2026年起新生兒1人', 2.0]);
+  if (o.children === 'n2') list.push(['2026年起新生兒2人', 2.5]);
+  if (o.children === 'n3') list.push(['2026年起新生兒3人以上', 3.0]);
+  if (o.econ === 'low' || o.econ === 'midlow') list.push(['經濟弱勢（低收／中低收）', 1.4]);
+  if (o.socialWeak) list.push(['社會弱勢', 1.2]);
+  const m = list.length ? Math.max.apply(null, list.map(function (x) { return x[1]; })) : 1.0;
+  return { list: list, m: m };
+}
+
+// 主計算：回傳 { error } 或 { tier, base, multList, mult, gross, amount, group }
+function compute(o) {
+  if (!o.rent || o.rent <= 0) return { error: '請填寫每月實際租金。' };
+  if (!o.members || o.members < 1) return { error: '請填寫家庭成員人數。' };
+  if (SPLIT_CITIES.indexOf(o.city) >= 0 && !o.area) return { error: '請選擇行政區組別（主要／其他）。' };
+  if (o.members === 1 && o.children !== 'none') return { error: '家庭成員只有1人，不能同時有育兒加碼，請把成員人數改為2人以上，或把育兒狀況改為無。' };
+  const group = groupFor(o.city, o.area);
+  const tier = tierOf(o.members, o.econ, o.socialWeak, o.under40);
+  const base = BASE[group][tier - 1];
+  const mm = multipliersOf(o);
+  const gross = Math.round(base * mm.m);
+  const amount = Math.min(gross, o.rent);
+  return { tier: tier, base: base, multList: mm.list, mult: mm.m, gross: gross, amount: amount, group: group };
+}
+
+function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+if (typeof document !== 'undefined') {
+  const cityEl = document.getElementById('city');
+  const areaBox = document.getElementById('areaBox');
+  const areaHint = document.getElementById('areaHint');
+  const errBox = document.getElementById('errBox');
+  function refreshArea() {
+    const c = cityEl.value;
+    if (SPLIT_CITIES.indexOf(c) >= 0) {
+      areaBox.style.display = 'block';
+      areaHint.textContent = MAIN_HINT[c] + '（完整分組以國土署公告附件為準。）';
+    } else {
+      areaBox.style.display = 'none';
+    }
+  }
+  cityEl.addEventListener('change', refreshArea);
+  refreshArea();
+
+  function radioVal(name) {
+    const el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+  document.getElementById('calcBtn').addEventListener('click', function () {
+    errBox.style.display = 'none';
+    const o = {
+      city: cityEl.value,
+      area: radioVal('area'),
+      members: parseInt(document.getElementById('members').value, 10),
+      econ: radioVal('econ'),
+      socialWeak: document.getElementById('socialWeak').checked,
+      under40: radioVal('age') === 'under40',
+      newlywed: radioVal('newlywed'),
+      children: document.getElementById('children').value,
+      rent: parseInt(document.getElementById('rent').value, 10),
+      income: parseInt(document.getElementById('income').value, 10) || null
+    };
+    const r = compute(o);
+    if (r.error) {
+      errBox.textContent = r.error;
+      errBox.style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+      return;
+    }
+    document.getElementById('rAmount').textContent = fmt(r.amount);
+    const multTxt = r.multList.length
+      ? r.multList.map(function (x) { return x[0] + ' ' + x[1] + '倍'; }).join('、') + '，取最高 ' + r.mult + ' 倍'
+      : '無加碼，倍數 1 倍';
+    document.getElementById('rBreak').innerHTML =
+      '級距：第' + r.tier + '級（' + r.group + '，基本金額 ' + fmt(r.base) + ' 元）<br>' +
+      '加碼：' + multTxt + '<br>' +
+      '基本金額 × 倍數 ＝ ' + fmt(r.gross) + ' 元；實際租金 ' + fmt(o.rent) + ' 元，取較低者。';
+    const checks = [
+      ['本人及家庭成員均無自有住宅', document.getElementById('e1').checked],
+      ['未同時領取其他政府住宅補貼', document.getElementById('e2').checked],
+      ['租屋具有房屋稅籍且已保存登記', document.getElementById('e3').checked],
+      ['申請人已成年，且在國內設有戶籍', document.getElementById('e4').checked]
+    ];
+    const missing = checks.filter(function (c) { return !c[1]; }).map(function (c) { return c[0]; });
+    let eligHtml = '<b>資格初步判斷</b><br>';
+    if (missing.length === 0) {
+      eligHtml += '<span class="ok">✔ 四項資格你都已確認，初步符合，仍須經審核。</span>';
+    } else {
+      eligHtml += '<span class="warn">以下項目你尚未勾選，金額僅供參考，請先確認：' + missing.join('、') + '。</span>';
+    }
+    eligHtml += '<br><span class="note">所得門檻：各縣市門檻不同，第一版不以所得擋下申請，請對照官方附表。' +
+      (o.income ? '你填的家庭年所得：' + fmt(o.income) + ' 元。' : '你未填寫家庭年所得。') + '</span>';
+    document.getElementById('rElig').innerHTML = eligHtml;
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+  });
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    document.getElementById('members').value = '1';
+    document.getElementById('rent').value = '';
+    document.getElementById('income').value = '';
+    document.getElementById('children').value = 'none';
+    document.querySelectorAll('.elig').forEach(function (el) { el.checked = false; });
+    document.getElementById('result').style.display = 'none';
+    errBox.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+</script>
+</body>
+</html>
