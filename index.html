@@ -123,7 +123,7 @@
         <p class="brand-line">UR CAPITAL<span>出品</span></p>
         <h1>公司補助・企業貸款媒合工具</h1>
         <p class="lede">填一次公司條件，同時比對中央與地方政府補助計畫、政策性貸款與銀行專案。結果會告訴你符合哪幾項、金額或額度多少、資格條件、受理方式、要備哪些文件，並附官方連結。</p>
-        <p class="meta-line">資料查證日期：<b>2026 年 10 月 20 日</b>・<b>每月更新</b>（金額、資格與受理期間均查證自各機關官方公告）・全站共收錄 <b>88 項</b>（補助 66 項＋貸款 22 項）</p>
+        <p class="meta-line">資料查證日期：<b>2026 年 11 月 1 日</b>・<b>每月更新</b>（金額、資格與受理期間均查證自各機關官方公告）・全站共收錄 <b>93 項</b>（補助 71 項＋貸款 22 項）</p>
       </header>
 
       <div class="tabs" role="tablist" aria-label="媒合類別">
@@ -279,7 +279,7 @@
                   <option value="childcare">托育</option>
                   <option value="tax">租稅抵減</option>
                 </select></label>
-              <div class="total">目前收錄補助計畫共 <b id="subsidy-total">66</b> 項</div>
+              <div class="total">目前收錄補助計畫共 <b id="subsidy-total">71</b> 項</div>
             </div>
             <div class="summary" id="subsidy-summary"></div>
             <div class="filters" id="subsidy-filters">
@@ -327,7 +327,7 @@
           </form>
 
           <div>
-            <p class="loan-total-line">目前收錄貸款共 <b id="loan-total">22</b> 項・全站合計 <b>88</b> 項（補助 66 項＋貸款 22 項）。其中標示「保證通道」「融資協助通道」者性質不同於貸款本體；標示「部分待複核」者，部分規格以主管機關公告為準。</p>
+            <p class="loan-total-line">目前收錄貸款共 <b id="loan-total">22</b> 項・全站合計 <b>93</b> 項（補助 71 項＋貸款 22 項）。其中標示「保證通道」「融資協助通道」者性質不同於貸款本體；標示「部分待複核」者，部分規格以主管機關公告為準。</p>
             <div class="summary" id="loan-summary"></div>
             <div class="filters" id="loan-filters">
               <button type="button" class="fbtn" data-f="all" aria-pressed="true">全部</button>
@@ -342,7 +342,7 @@
 
       <footer>
         <p><b>免責聲明：</b>本工具資料整理自政府官方公告，僅供初步媒合參考，不構成申請保證或專業意見；各計畫資格、金額與受理期間以主管機關最新公告為準，申請前請至官方連結確認。</p>
-        <p>資料來源：經濟部中小及新創企業署、經濟部商業發展署、經濟部產業發展署、經濟部產業技術司、勞動部勞動力發展署、文化部、文化內容策進院、農業部、數位發展部數位產業署、原住民族委員會、客家委員會及各縣市政府產業發展／經濟發展／青年事務主管機關等官方公告（查證日期 2026-10-20）。標示「官方未明載」的項目，表示本次查證未取得官方數字，已如實標註、未臆測。</p>
+        <p>資料來源：經濟部中小及新創企業署、經濟部商業發展署、經濟部產業發展署、經濟部產業技術司、勞動部勞動力發展署、文化部、文化內容策進院、農業部、數位發展部數位產業署、原住民族委員會、客家委員會及各縣市政府產業發展／經濟發展／青年事務主管機關等官方公告（查證日期 2026-11-01）。標示「官方未明載」的項目，表示本次查證未取得官方數字，已如實標註、未臆測。</p>
       </footer>
     </div>
 
@@ -383,7 +383,7 @@
       else no.push("限中小企業（資本額 1 億元以下或員工未滿 200 人）");
     }
 
-    /* ================= 補助資料庫：中央計畫 30 項＋地方計畫 36 項，共 66 項（查證 2026-10-20） ================= */
+    /* ================= 補助資料庫：中央計畫 33 項＋地方計畫 38 項，共 71 項（查證 2026-11-01） ================= */
     /* check 回傳 {ok:[], no:[], special:bool}：special=true 表示含工具無法判定的特殊條件 */
     var SUBSIDIES = [
     {
@@ -487,11 +487,12 @@
       region:"全國（製造業）", regionKey:"nationwide", needs:["digital"], maxWan:15,
       amount:"最高 15 萬點（1 點＝1 元），折抵至多 1/2 服務費",
       elig:"中小型製造業者，資本額 1 億元以下或員工未滿 200 人，須工廠登記（或免辦證明），非陸資，曾獲補助者不得重複",
-      accept:"至 115/10/30 17:30，點數用罄即停，線上申請",
+      accept:"已停止受理（補助點數已全數分放完畢，後續不再開放遞補）",
       docs:["線上計畫申請表","個資同意書","聲明書","利益衝突揭露表","工廠登記（或免辦證明）","切結書"],
       url:"https://www.ida.gov.tw/ctlr?PRO=filepath.DownloadFile&f=executive&t=f&id=20527", urlText:"產業發展署 115 年申請須知（PDF）",
       check:function(p){
         var ok=[], no=[], special=false;
+        no.push("本計畫補助點數已全數分放完畢，現已停止受理，後續不再開放遞補");
         if(p.industry !== "manufacturing") no.push("限中小型製造業，你的產業不在範圍內");
         else if(!isSME(p)) no.push("限中小型製造業者（資本額 1 億元以下或員工未滿 200 人）");
         else { ok.push("屬中小型製造業，符合規模資格"); special = true; ok.push("另須工廠登記（或免辦證明）且未曾獲本補助，工具無法判定"); }
@@ -515,10 +516,10 @@
     },
     {
       id:"a09", name:"商業服務業韌性計畫－輔導型", agency:"經濟部商業發展署",
-      region:"全國", regionKey:"nationwide", needs:["digital"], maxWan:null,
-      amount:"金額依審查核定（官方未明載固定上限）",
+      region:"全國", regionKey:"nationwide", needs:["digital"], maxWan:300,
+      amount:"補助款不逾總經費 50%，每案上限 300 萬元（補助款≦自籌款≦實收資本額）",
       elig:"提案業者（AI 服務商／輔導單位）須帶動 20–50 家店家導入 AI 工具",
-      accept:"依公告梯次受理",
+      accept:"依公告梯次受理（第一梯 115/3/31、第二梯 115/8/31 已截止；第三梯須知暫定 116/1/4–1/29，日期以商業署最新公告為準）",
       docs:["提案計畫書","預定受輔導店家清冊","AI 工具使用 3 個月以上流量證明","教育訓練證明","AI 成熟度評估量表"],
       url:"https://www.aoc.gov.tw/showPublicAttach/458", urlText:"商業發展署公告附件",
       check:function(p){
@@ -728,11 +729,12 @@
       region:"全國（中小微企業）", regionKey:"nationwide", needs:["digital"], maxWan:3,
       amount:"補助 50%，點數上限 3 萬點（最高 3 萬元）",
       elig:"符合資格之中小微企業／組織選購平臺上架雲端方案；115 年度細部資格官方未明載",
-      accept:"平臺線上申請",
+      accept:"計畫已結束（TCloud 官網公告服務調整中；數位點數補助作業要點已廢止，未見 116 年度續辦公告）",
       docs:["工商憑證驗證","公司基本資料","授權資料查詢同意","數位需求自評表"],
       url:"https://moda.gov.tw/press/press-releases/9665.html", urlText:"數位發展部新聞稿——臺灣雲市集",
       check:function(p){
         var ok=[], no=[], special=false;
+        no.push("本計畫已結束，116 年度無續辦，請勿送件");
         if(isSME(p)) ok.push("符合中小微企業規模"); else no.push("限中小微企業（資本額逾 1 億元且員工 200 人以上）");
         special = true; ok.push("115 年度細部資格官方未明載，申請前請對照平臺公告確認");
         return {ok:ok, no:no, special:special};
@@ -800,12 +802,12 @@
     },
     {
       id:"a28", name:"原住民族創新成長計畫", agency:"原住民族委員會",
-      region:"全國（原民企業）", regionKey:"nationwide", needs:["rd"], maxWan:300, closed:true,
+      region:"全國（原民企業）", regionKey:"nationwide", needs:["rd"], maxWan:300,
       amount:"事業成長類 120 萬元；綠色創新類 300 萬元；資本門須占補助款 60% 以上，自籌至少占補助款 30%",
       elig:"公司負責人須為原住民；非獨資者原住民股份或股東人數 80% 以上，或原住民員工達 50% 以上；負責人為原住民之商號亦可",
-      accept:"年度梯次線上申請（115 年度至 2026/3/16 已截止）",
+      accept:"116 年度受理至 2026/12/10 17:00（線上申請）",
       docs:["線上申請表","推動計畫書","立案證明／最新公司變更登記表","勞健保投保資料","聲明書及個資同意書"],
-      url:"https://startup.cip.gov.tw/project/2026/", urlText:"原民會創業計畫網站（115 年度）",
+      url:"https://startup.cip.gov.tw/news/contents/87", urlText:"116 年度創新成長計畫申請須知公告（原民會創業計畫網站）",
       check:function(p){
         var ok=[], no=[];
         if(p.identity === "indigenous") ok.push("負責人具原住民身分，符合計畫核心資格"); else no.push("公司負責人須為原住民——你目前的特殊身分未符合");
@@ -820,7 +822,7 @@
       elig:"資格同創新成長計畫；116 年度限 111–115 年成立者（5 年內優先）",
       accept:"年度梯次線上申請，116 年度至 2026/12/10 截止",
       docs:["線上申請表","推動計畫書","個資同意書","聲明書","公司立案證明＋最新變更登記表","勞健保資料"],
-      url:"https://startup.cip.gov.tw/post/contents/69", urlText:"原民會創業共好計畫公告",
+      url:"https://startup.cip.gov.tw/news/contents/88", urlText:"116 年度創業共好計畫申請須知公告（原民會創業計畫網站）",
       check:function(p){
         var ok=[], no=[];
         if(p.identity === "indigenous") ok.push("負責人具原住民身分，符合計畫核心資格"); else no.push("負責人須為原住民（資格同創新成長計畫）——你目前的特殊身分未符合");
@@ -841,6 +843,51 @@
         if(p.identity === "hakka") ok.push("位於客家文化重點發展區，與計畫的客家文化主體性方向相符");
         else { special = true; ok.push("產業是否具客家文化主體性，工具無法判定"); }
         ok.push("提醒：另須具研發場所、基本人力設備及完備管理制度");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a31", name:"繼續僱用高齡者補助計畫", agency:"勞動部勞動力發展署",
+      region:"全國", regionKey:"nationwide", needs:["hire"], maxWan:25.8,
+      amount:"留用 65 歲員工：前 6 個月每人每月 13,000 元，第 7–18 個月每人每月 15,000 元，最長 18 個月，每人最高 25.8 萬元",
+      elig:"僱用勞工 3 人以上之民營事業單位／團體／私立學校；留用 116 年內滿 65 歲員工達行業規定比例（20%–30%），繼續僱用 6 個月以上且薪資不低於原薪",
+      accept:"116 年度受理至 2027/8/31（採事前審查，線上與實體雙軌）",
+      docs:["官方未明載，申請前向轄區分署核實"],
+      url:"https://gov.tw/sd8", urlText:"勞動部中高齡者及高齡者就業相關服務網（線上申辦）",
+      check:function(p){
+        var ok=[], no=[], special=true;
+        if(p.employees >= 3) ok.push("僱用人數達 3 人以上，符合基本資格"); else no.push("限僱用勞工 3 人以上之民營事業單位／團體／私立學校，目前 " + p.employees + " 人");
+        ok.push("另須留用 116 年內滿 65 歲員工達行業規定比例（20%–30%），繼續僱用 6 個月以上且薪資不低於原薪，留用比例與薪資維持須自行確認");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a32", name:"深科技驅動中小企業跨域創新計畫—企業跨域研發補助", agency:"經濟部中小及新創企業署",
+      region:"全國", regionKey:"nationwide", needs:["rd"], maxWan:900,
+      amount:"每案上限 900 萬元，不超過總經費 50%（補助款≦自籌款≦實收資本額）",
+      elig:"至少 2 家中小企業組成聯盟申請（主導廠商 1 家），皆須依法辦理公司／商業／有限合夥登記；擇一主軸：代理式 AI、永續 AI、物理 AI；結案時成果須已試量產、試營運或上市銷售",
+      accept:"116 年度受理至 2026/12/7 17:30，執行至 2027/10/15",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://sbir.sme.gov.tw/cross/notice_content?id=12468", urlText:"116 年度企業跨域研發補助公告（SBIR 官網）",
+      check:function(p){
+        var ok=[], no=[], special=true;
+        if(isSME(p)) ok.push("符合中小企業認定（資本額 1 億元以下或員工未滿 200 人）"); else no.push("非中小企業（資本額逾 1 億元且員工 200 人以上）");
+        var cn = capitalNote(p, 900); if(cn) ok.push(cn);
+        ok.push("另須至少 2 家中小企業組成聯盟申請（主導廠商 1 家），工具無法判定");
+        return {ok:ok, no:no, special:special};
+      }
+    },
+    {
+      id:"a33", name:"116 年度第 1 次補助公司或商號參加海外國際展覽", agency:"經濟部國際貿易署",
+      region:"全國", regionKey:"nationwide", needs:["marketing"], maxWan:16,
+      amount:"單一展覽最高 16 萬元（1 個攤位 12 萬元，每增 1 攤位加 1 萬元）；符合規定費用補助比例最高 90%；新創事業及拓銷新南向國家農業市場業者全年最高 40 萬元",
+      elig:"依出進口廠商登記辦法向貿易署登記之公司或商號，於規定期間內具出進口實績、無欠繳推廣貿易服務費、1 年內未受暫停出進口處分；新創事業及新南向農業業者另有專屬資格",
+      accept:"116 年度第 1 次受理至 2026/11/23；補助展覽期間 2027/1/1–6/30",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://market.meettaiwan.com/espo/detail.aspx?id=4870&tp=1", urlText:"經濟部補助公司或商號參展專案辦公室公告（116 年度第 1 次）",
+      check:function(p){
+        var ok=[], no=[], special=true;
+        ok.push("須為依出進口廠商登記辦法向貿易署登記之公司或商號，且於規定期間內具出進口實績、無欠繳推廣貿易服務費、1 年內未受暫停出進口處分，工具無法判定");
         return {ok:ok, no:no, special:special};
       }
     },
@@ -1231,6 +1278,31 @@
         if(p.industry === "culture") ok.push("屬文創影視範疇"); else no.push("限於金門拍攝製作之影視業者（電影片／電視劇製作單位），你的產業不在範圍內");
         ok.push("拍攝地點須在金門縣，工具無法判定");
         return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b37", name:"高雄市 115 年度市場青年創業補助計畫", agency:"高雄市政府經濟發展局",
+      region:"高雄市", regionKey:"kaohsiung", needs:["rd"], maxWan:30,
+      amount:"最高補助 30 萬元（補助項目：營業場所裝修、商品包裝設計、數位服務及網路行銷；補助比例官方未明載）",
+      elig:"設籍高雄市滿半年、年滿 18 歲，於公、民有市場營業且符合相關資格之攤商（自 114 年起不再以青年年齡為限，推動全齡創業）",
+      accept:"115 年度受理至 2026/11/23（郵寄或親送）",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://edbkcg.kcg.gov.tw/", urlText:"高雄市政府經濟發展局官網（公告查詢）",
+      check:function(p){ var ok=[], no=[]; cityGate(p, "kaohsiung", "高雄市", ok, no); residenceGate(p, "kaohsiung", "高雄市", ok, no);
+        if(p.age >= 18) ok.push("負責人年滿 18 歲"); else no.push("負責人須年滿 18 歲，目前 " + p.age + " 歲");
+        ok.push("另須設籍高雄市滿半年並於公、民有市場營業，工具無法判定");
+        return {ok:ok, no:no, special:true}; }
+    },
+    {
+      id:"b38", name:"桃園市 115 年微型創業獎勵計畫", agency:"桃園市政府青年事務局",
+      region:"桃園市", regionKey:"taoyuan", needs:["rd"], maxWan:12,
+      amount:"每案 6–12 萬元開業獎勵金；另有青創資源中心財會／法律／行銷一對一諮詢輔導",
+      elig:"桃園市青年，具藝術工藝、技術工藝、餐飲或美容美髮專業技術並有創業規劃者（年齡等細部資格以青年局公告為準）",
+      accept:"115 年度受理至 2026/12/18 17:00 或經費用罄",
+      docs:["官方未明載，申請前向主管機關核實"],
+      url:"https://youth.tycg.gov.tw", urlText:"桃園市政府青年事務局官網",
+      check:function(p){ var ok=[], no=[]; var sp = cityGate(p, "taoyuan", "桃園市", ok, no);
+        ok.push("另須限藝術工藝、技術工藝、餐飲、美容美髮四產業之一，且具專業技術並有創業規劃，工具無法判定");
+        return {ok:ok, no:no, special:true}; }
     }
     ];
 
@@ -1292,7 +1364,7 @@
           '<dl class="grid2">' +
           '<div><dt>適用地區</dt><dd>' + esc(s.region) + '</dd></div>' +
           '<div><dt>受理方式</dt><dd>' + esc(s.accept) + '</dd></div>' +
-          '<div><dt>查證日期</dt><dd>2026-10-20</dd></div>' +
+          '<div><dt>查證日期</dt><dd>2026-11-01</dd></div>' +
           '</dl>' +
           '<p class="desc"><b>資格摘要</b>' + esc(s.elig) + '</p>' + reasons +
           '<details><summary>應備文件（' + s.docs.length + ' 項）</summary><ul>' + docs + '</ul></details>' +
@@ -1313,19 +1385,19 @@
       };
     }
 
-    /* ================= 貸款資料庫：22 項 L01–L22（查證 2026-10-20） ================= */
+    /* ================= 貸款資料庫：22 項 L01–L22（查證 2026-11-01） ================= */
     /* channel:"guarantee"=保證通道、channel:"assist"=融資協助通道（性質不同於貸款本體）；pending:true=部分待複核 */
     /* check 回傳 {ok:[], fix:[], no:[]}：no=資格不符；fix=補件或調整後可符合 */
     var LOANS = [
     {
       id:"L01", name:"青年創業貸款", agency:"經濟部中小及新創企業署",
       capWan:1800, capText:"週轉最高 600 萬元；資本最高計畫經費 8 成、上限 1,200 萬元；同一負責人合計不逾 1,800 萬元",
-      rateText:"郵儲二年期定儲機動 +0.575%；歸戶 100 萬元以下部分依貸款利率補貼最長 5 年（2025/7/1 更名，原青年創業及啟動金貸款）",
+      rateText:"郵儲二年期定儲機動 +0.575%；歸戶 100 萬元以下部分依貸款利率補貼最長 5 年（利息補貼上限仍為歸戶 100 萬元，未隨保證門檻調高；2025/7/1 更名，原青年創業及啟動金貸款）",
       termText:"週轉最長 6 年（寬限 2 年）；資本廠房最長 20 年（寬限 5 年）、設備最長 7 年（寬限 3 年）",
-      guarText:"8–9 成（100 萬元以下 9.5 成、批次 10 成）",
+      guarText:"8–9 成（新增貸款歸戶 150 萬元以下 9.5 成、批次 10 成；9.5 成門檻自 2026/9/1 由 100 萬元放寬至 150 萬元）",
       desc:"設立未滿 8 年中小企業（非金融保險／特殊娛樂），負責人 18–45 歲、自然人出資占資本額 20% 以上，3 年內創業課程 20 小時或 2 學分。",
-      docs:["創業貸款計畫書（100 萬元以下得以申請表代之）","身分證明","登記證明","課程證明","聯徵同意書"],
-      url:"https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg031093/ch04/type2/gov31/num8/Eg.pdf", urlText:"青年創業貸款要點（政府公報 PDF）",
+      docs:["創業貸款計畫書（150 萬元以下得以申請表代之）","身分證明","登記證明","課程證明","聯徵同意書"],
+      url:"https://law.moea.gov.tw/Download.ashx?FileID=192897&id=63421&type=HLAW", urlText:"青年創業貸款要點第八點、第九點修正對照表（經濟部法規系統）",
       check:function(p,l){
         var ok=[], fix=[], no=[];
         if(p.years < 8) ok.push("公司設立未滿 8 年"); else no.push("公司設立已滿 8 年，不符青創貸款資格");
@@ -1524,19 +1596,21 @@
       }
     },
     {
-      id:"L12", name:"基隆市中小企業圓夢貸款（含青年創業貸款利息補貼）", agency:"基隆市政府產業發展處", pending:true,
-      capWan:100, capText:"每案最高 100 萬元；通過圓夢貸款且負責人 18–45 歲者，得就 200 萬元額度申請利息補貼",
-      rateText:"利率／期限／成數：官方要點全文未查得，不臆測，依主管機關公告為準",
-      termText:"依主管機關公告為準（官方要點全文未查得）",
-      guarText:"依主管機關公告為準（官方要點全文未查得）",
-      desc:"登記基隆市之中小企業（分一、二、三類）。",
-      docs:["申請表","身分證影本","事業計畫書","切結書","登記證明","近三年營所稅申報書","401/403/405 申報書","近三年財報","聯徵報告（官方檢核表）"],
-      url:"https://www.klcg.gov.tw/wSite/public/Attachment/00909/f1739344556661.pdf", urlText:"基隆市政府——圓夢貸款申請檢核表（PDF）",
+      id:"L12", name:"基隆市中小企業圓夢貸款", agency:"基隆市政府產業發展處",
+      capWan:600, capText:"第一類（商業）100 萬元；第二類（公司／有限合夥）500 萬元；第三類（策略性產業）600 萬元",
+      rateText:"中華郵政二年期定期儲金機動利率加年息 1.45%，機動計息",
+      termText:"最長 7 年，含本金償還寬限期 2 年；遇災害等不可抗力可展延最長 2 年",
+      guarText:"第一類 9.5 成，其餘最高 9 成；信用保證融資總金額以 1 億元為限",
+      desc:"登記基隆市之中小企業（分一、二、三類）：依法完成商業／公司／有限合夥登記、登記地址在基隆市且符合中小企業認定標準第二條者；免辦商業登記並完成稅籍登記之小規模商業得適用第一類；金融及保險業、特殊娛樂行業不適用",
+      docs:["申請書","負責人身分證明影本","事業計畫書","登記證明","切結書","聯徵綜合信用報告","近三年營所稅申報書","401/403/405 申報書","近三年財報","工廠登記證明（製造業者）"],
+      url:"https://exlaw.klcg.gov.tw/LawContent.aspx?media=print&id=GL000605", urlText:"基隆市中小企業圓夢貸款實施要點（基隆市法規系統）",
       check:function(p,l){
         var ok=[], fix=[], no=[];
         if(p.city==="keelung") ok.push("公司登記於基隆市"); else no.push("須登記於基隆市");
-        if(l.amount <= 100) ok.push("需求金額在每案 100 萬元額度內"); else fix.push("每案上限 100 萬元；負責人 18–45 歲者通過後得就 200 萬元額度申請利息補貼，超出部分需搭配其他貸款");
-        fix.push("本項部分規格待複核：利率、期限與保證成數以主管機關公告為準");
+        if(l.amount <= 100) ok.push("需求金額在第一類（商業）額度 100 萬元內");
+        else if(l.amount <= 500) ok.push("需求金額在第二類（公司／有限合夥）額度 500 萬元內（第一類上限 100 萬元，實際類別由審查核定）");
+        else if(l.amount <= 600) ok.push("需求金額在第三類（策略性產業）額度 600 萬元內（第一、二類上限分別為 100／500 萬元，實際類別由審查核定）");
+        else fix.push("每案上限依類別為 100／500／600 萬元，需求 " + l.amount + " 萬元超出部分需搭配其他貸款");
         return {ok:ok, fix:fix, no:no};
       }
     },
@@ -1762,7 +1836,7 @@
           '<p class="desc"><b>資格摘要（適用對象）</b>' + esc(x.desc) + '</p>' + reasons +
           '<details><summary>應備文件（' + x.docs.length + ' 項）</summary><ul>' + docs + '</ul></details>' +
           '<a class="official" href="' + x.url + '" target="_blank" rel="noopener">官方連結：' + esc(x.urlText) + ' →</a>' +
-          '<div class="verify-line">查證日期：2026-10-20</div>' +
+          '<div class="verify-line">查證日期：2026-11-01</div>' +
           '</article>';
       }).join("");
     }
