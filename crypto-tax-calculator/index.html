@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加密資產報稅試算器｜台灣版</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif; background: #f6f4ef; color: #222; line-height: 1.6; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 8px 0 4px; }
+  .sub { color: #666; font-size: 14px; margin-bottom: 12px; }
+  .banner { background: #fff3d6; border: 1px solid #e8c87a; border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; }
+  .disclaimer { background: #fdecea; border: 1px solid #f0b8b2; border-radius: 10px; padding: 12px; font-size: 14px; margin-bottom: 16px; color: #7f1d1d; }
+  .disclaimer b { font-size: 15px; }
+  .card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .card h2 { font-size: 16px; margin: 0 0 10px; }
+  .card h3 { font-size: 15px; margin: 14px 0 6px; }
+  label.field { display: block; font-size: 14px; margin: 10px 0 4px; font-weight: 600; }
+  select, input[type="number"], input[type="text"], input[type="date"] { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; background: #fff; }
+  .radios label, .checks label { display: block; font-size: 15px; padding: 6px 0; }
+  .radios input, .checks input { margin-right: 8px; transform: scale(1.2); }
+  .hint { font-size: 13px; color: #777; margin-top: 4px; }
+  button.main { width: 100%; padding: 14px; font-size: 18px; border: none; border-radius: 10px; background: #1a7f4b; color: #fff; cursor: pointer; }
+  button.main:active { background: #14663c; }
+  button.sub2 { width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 10px; background: #fff; cursor: pointer; margin-top: 10px; }
+  button.add { padding: 8px 14px; font-size: 14px; border: 1px solid #1a7f4b; border-radius: 8px; background: #fff; color: #1a7f4b; cursor: pointer; margin-top: 8px; }
+  button.del { padding: 6px 10px; font-size: 13px; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #888; cursor: pointer; }
+  #result { display: none; }
+  .big { font-size: 34px; font-weight: 800; color: #1a7f4b; margin: 4px 0; }
+  .big small { font-size: 18px; font-weight: 600; }
+  .big.neg { color: #b91c1c; }
+  .line { border-top: 1px dashed #ddd; margin: 12px 0; }
+  .ok { color: #1a7f4b; } .warn { color: #b45309; } .bad { color: #b91c1c; }
+  .brand-line { font-size: 13px; font-weight: 900; letter-spacing: .22em; color: #1a7f4b; margin: 0 0 8px; }
+  .brand-line span { color: #b7791f; letter-spacing: .05em; margin-left: 8px; font-weight: 700; }
+  .note { font-size: 13px; color: #666; }
+  a { color: #1a7f4b; }
+  .err { background: #fdecea; border: 1px solid #f0b8b2; color: #b91c1c; border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px; display: none; }
+  table.tx { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.tx th { text-align: left; font-size: 13px; color: #666; padding: 4px 4px 4px 0; }
+  table.tx td { padding: 4px 4px 4px 0; vertical-align: top; }
+  table.tx input { padding: 8px; font-size: 15px; }
+  table.tx input[type="number"] { min-width: 0; }
+  .cmp { display: flex; gap: 10px; }
+  .cmp > div { flex: 1; background: #f6f4ef; border-radius: 10px; padding: 12px; }
+  .cmp h3 { margin: 0 0 6px; font-size: 15px; }
+  .cmp .amt { font-size: 24px; font-weight: 800; }
+  .cmp .amt.neg { color: #b91c1c; }
+  .cmp .amt.pos { color: #1a7f4b; }
+  .kv { font-size: 14px; }
+  .kv b { float: right; }
+  .kv div { overflow: hidden; padding: 2px 0; }
+  @media (max-width: 480px) {
+    .cmp { flex-direction: column; }
+    table.tx th:nth-child(1), table.tx td:nth-child(1) { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="brand-line">UR CAPITAL<span>出品</span></p>
+  <h1>加密資產報稅試算器</h1>
+  <div class="sub">台灣版｜輸入買賣紀錄，算出 FIFO 與加權平均兩種成本下的損益，再對照境內綜所稅與海外最低稅負兩條路線</div>
+
+  <div class="disclaimer">⚠️ <b>不構成稅務建議，實際報稅請以國稅局最新規定與專業稅務人員意見為準。</b><br>
+  本工具僅依財政部公開說明試算參考數字。虛擬資產服務法已於 2026 年 6 月 30 日三讀（監理專法，不直接規定課稅）；課稅仍依所得稅法與所得基本稅額條例。境內外認定、成本計算方法等細節財政部尚未明文，個案請洽國稅局（0800-000-321）或會計師。</div>
+
+  <div class="banner">📅 115 年度（2026 年）的交易所得，於 <b>2027 年 5 月</b>申報。交易資料多半不會出現在國稅局提供的所得查詢清單裡，請自行整理、保留完整買賣紀錄。</div>
+
+  <div id="errBox" class="err"></div>
+
+  <div class="card">
+    <h2>一、基本設定</h2>
+    <label class="field" for="coin">幣種（選填，僅供顯示）</label>
+    <input type="text" id="coin" placeholder="例如：BTC" value="BTC">
+    <label class="field">交易發生在哪裡的交易所</label>
+    <div class="radios">
+      <label><input type="radio" name="venue" value="tw" checked>台灣交易所（實務上多認定為境內所得，走綜所稅）</label>
+      <label><input type="radio" name="venue" value="overseas">海外交易所（實務上多認定為海外所得，走最低稅負制）</label>
+      <label><input type="radio" name="venue" value="both">兩邊都有（請分開各算一次）</label>
+    </div>
+    <div class="hint">境內外認定：財政部公開說明未逐項公布認定方式，實務見解以交易所所在地為準（KPMG）。不是「放海外交易所就一定是海外所得」，也不是「沒匯回就不用報」，個案請確認。</div>
+  </div>
+
+  <div class="card">
+    <h2>二、買入紀錄</h2>
+    <div class="hint">每筆買入的單價請填新台幣；以外幣計價請先以成交日匯率換算。手續費請填該筆買入實際支付的金額。</div>
+    <table class="tx" id="buyTable">
+      <thead><tr><th style="width:26%">日期</th><th style="width:24%">數量</th><th style="width:26%">買入單價（NT$）</th><th style="width:18%">手續費（NT$）</th><th style="width:6%"></th></tr></thead>
+      <tbody id="buyBody"></tbody>
+    </table>
+    <button class="add" id="addBuy" type="button">＋ 新增一筆買入</button>
+  </div>
+
+  <div class="card">
+    <h2>三、賣出紀錄</h2>
+    <div class="hint">只算「已經賣出」的部分；還持有、沒賣掉的部位不計入當年度所得。手續費含交易手續費與出金手續費等必要費用。</div>
+    <table class="tx" id="sellTable">
+      <thead><tr><th style="width:26%">日期</th><th style="width:24%">數量</th><th style="width:26%">賣出單價（NT$）</th><th style="width:18%">手續費（NT$）</th><th style="width:6%"></th></tr></thead>
+      <tbody id="sellBody"></tbody>
+    </table>
+    <button class="add" id="addSell" type="button">＋ 新增一筆賣出</button>
+  </div>
+
+  <div class="card">
+    <h2>四、其他所得（選填，算稅額對照用）</h2>
+    <label class="field" for="otherNet">其他綜合所得淨額（NT$，不含本筆交易所得）</label>
+    <input type="number" id="otherNet" min="0" placeholder="例如：800000">
+    <div class="hint">境內路線用：把本筆所得併入綜所稅後，稅會多多少。不知道就留空，會改用各稅率級距對照表呈現。</div>
+    <label class="field" for="otherOverseas">其他海外所得（NT$，不含本筆交易所得）</label>
+    <input type="number" id="otherOverseas" min="0" placeholder="例如：0">
+    <div class="hint">海外路線用：全戶全年海外所得合計達 100 萬元才計入基本所得額，記得加總全戶其他海外所得。</div>
+    <label class="field" for="otherBase">基本所得額其他項目（NT$，選填）</label>
+    <input type="number" id="otherBase" min="0" placeholder="例如：0">
+    <div class="hint">海外路線用：除本筆與其他海外所得外，計入基本所得額的其他項目（如海外保險給付等）。留空視為 0。</div>
+    <label class="field" for="generalTax">一般所得稅額（NT$，選填）</label>
+    <input type="number" id="generalTax" min="0" placeholder="例如：0">
+    <div class="hint">海外路線用：最低稅負是「基本稅額與一般所得稅額取高者」，填了才能算出要補繳的差額；不知道就留空。</div>
+  </div>
+
+  <button class="main" id="calcBtn">開始試算</button>
+  <button class="sub2" id="sampleBtn">載入範例紀錄</button>
+  <button class="sub2" id="resetBtn">重新填寫</button>
+
+  <div id="result" class="card">
+    <h2>試算結果</h2>
+    <div id="rSummary"></div>
+    <div class="line"></div>
+    <h3>兩種成本計算方法對照</h3>
+    <div class="cmp">
+      <div>
+        <h3>FIFO 先進先出法</h3>
+        <div class="amt" id="rFifoGain"></div>
+        <div class="kv" id="rFifoDetail"></div>
+      </div>
+      <div>
+        <h3>加權平均法</h3>
+        <div class="amt" id="rWacGain"></div>
+        <div class="kv" id="rWacDetail"></div>
+      </div>
+    </div>
+    <div class="hint" id="rMethodNote" style="margin-top:8px;"></div>
+    <div class="line"></div>
+    <div id="rTax"></div>
+    <div class="line"></div>
+    <div id="rLoss"></div>
+    <div class="line"></div>
+    <div><b>下一步</b></div>
+    <div class="note">1. 把交易所成交明細、入金出金紀錄、鏈上轉帳 TxID 依年度分資料夾存好，成本證明是查核關鍵；拿不出成本證明，國稅局得依規定標準或比例認定。<br>
+    2. 境內外認定、合約／挖礦／質押／空投等新型態所得，建議先打國稅局免費電話 0800-000-321 詢問，或請會計師依實際狀況判斷。<br>
+    3. 115 年度所得於 2027 年 5 月申報；若發現過去年度有應申報未申報的所得，自動補報補繳可加計利息免罰，越早處理越好。</div>
+  </div>
+
+  <div class="card">
+    <h2>規則怎麼來的（查證摘要）</h2>
+    <div class="note">
+    <b>課稅原則：</b>個人非經常性買賣非證券性質虛擬資產，屬財產交易所得（所得稅法第 14 條第 1 項第 7 類），以成交價額減除原始取得成本及相關費用後的餘額為所得額，併入綜合所得總額課稅；財產交易損失可列報特別扣除額。具證券性質者屬證券交易所得，目前停徵。經常性、營利性買賣可能另認定為營利所得。<br><br>
+    <b>海外所得與最低稅負：</b>申報戶全年海外所得合計達 NT$100 萬元，全數計入基本所得額；基本所得額超過 NT$750 萬元的部分按 20% 計算基本稅額，再與一般所得稅額比較，取高者補差額。海外財產交易損失只能扣抵同年度海外財產交易所得，不得往後年度扣抵。<br><br>
+    <b>成本方法尚未明確：</b>財政部未針對個人虛擬資產買賣明文規定應採 FIFO 或加權平均；實務上擇一採用、年度間不宜任意變更。本工具兩種都算給你對照，申報時請選定一種並保留計算表。<br><br>
+    <b>境內外認定尚未明確：</b>財政部公開說明未針對交易平台所在地逐項公布認定方式；實務見解（KPMG）以交易所所在地為準，台灣交易所為境內、海外交易所為海外，僅供參考，個案請確認。<br><br>
+    <b>115 年度綜所稅級距（2026 年所得、2027 年 5 月申報）：</b>淨額 610,000 元以下 5%、610,001～1,380,000 元 12%（累進差額 42,700）、1,380,001～2,770,000 元 20%（153,100）、2,770,001～5,190,000 元 30%（430,100）、5,190,001 元以上 40%（949,100）。<br><br>
+    <b>專法：</b>《虛擬資產服務法》2026 年 6 月 30 日立法院三讀通過，全文 56 條，7 月經總統公布，施行日期由行政院另定，子法規劃 2027 年第一季完成；VASP 改為事前許可制，並納管穩定幣發行。該法為監理專法，不直接規定課稅。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="note">資料來源：<br>
+    ・財政部賦稅署〈報載 FTX 聲請破產保護〉新聞稿（財產交易所得、海外所得說明）<a href="https://www.dot.gov.tw/singlehtml/ch26?cntId=a2c19cf668c24866be41e6348a3d08a9" target="_blank" rel="noopener">dot.gov.tw</a><br>
+    ・財政部稅務入口網〈最低稅負制〉<a href="https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-saving-manual/national/individual-income-tax/6xKrvGR" target="_blank" rel="noopener">etax.nat.gov.tw</a><br>
+    ・財政部公告〈115 年度綜合所得稅及所得基本稅額相關免稅額、扣除額、課稅級距金額〉<a href="https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=34B463DC8F1B49F29D440D92A6FD5139" target="_blank" rel="noopener">mof.gov.tw</a><br>
+    ・金管會新聞稿〈立法院院會三讀通過「虛擬資產服務法」〉<a href="https://www.fsc.gov.tw/ch/home.jsp?id=96&parentpath=0,2&mcustomize=multimessage_view.jsp&dataserno=202606300002&dtable=News" target="_blank" rel="noopener">fsc.gov.tw</a><br>
+    ・CryptoRebateHub〈虛擬貨幣要繳稅嗎？2026 台灣加密貨幣報稅與海外所得〉（2026-10-23 更新，交叉對照）<a href="https://cryptorebatehub.com/zh-tw/guides/taiwan-crypto-tax" target="_blank" rel="noopener">cryptorebatehub.com</a><br>
+    ・KPMG／XREX〈2026 年個人虛擬資產報稅該注意哪些事〉（境內外實務見解）<a href="https://xrex.io/tw/zh/blog/web3-podcast/2026-virtual-asset-tax-filing-kpmg-guide/" target="_blank" rel="noopener">xrex.io</a><br>
+    本工具由 UR Capital 製作，僅供試算參考；金額可能依物價指數調整，申報前請以財政部當年度公告為準。</div>
+  </div>
+</div>
+
+<script id="calc-script">
+// ---------- 純計算函式（可單元測試，不依賴 DOM） ----------
+// 115 年度綜所稅級距：[上限, 稅率, 累進差額]
+const BRACKETS_115 = [
+  [610000, 0.05, 0],
+  [1380000, 0.12, 42700],
+  [2770000, 0.20, 153100],
+  [5190000, 0.30, 430100],
+  [Infinity, 0.40, 949100]
+];
+function incomeTax115(net) {
+  if (!net || net <= 0) return 0;
+  for (var i = 0; i < BRACKETS_115.length; i++) {
+    if (net <= BRACKETS_115[i][0]) return Math.round(net * BRACKETS_115[i][1] - BRACKETS_115[i][2]);
+  }
+  return 0;
+}
+function marginalRate115(net) {
+  if (!net || net <= 0) return 0.05;
+  for (var i = 0; i < BRACKETS_115.length; i++) {
+    if (net <= BRACKETS_115[i][0]) return BRACKETS_115[i][1];
+  }
+  return 0.40;
+}
+// buys: [{qty, price, fee}], sells: [{qty, price, fee}]；金額皆 NT$
+// 單筆買入單位成本 = (qty*price + fee) / qty（含手續費攤入成本）
+function calcFifo(buys, sells) {
+  var lots = buys.map(function (b) {
+    return { qty: b.qty, unit: (b.qty * b.price + b.fee) / b.qty };
+  });
+  var proceeds = 0, cost = 0, fees = 0;
+  sells.forEach(function (s) {
+    proceeds += s.qty * s.price - s.fee;
+    fees += s.fee;
+    var need = s.qty;
+    while (need > 0 && lots.length > 0) {
+      var lot = lots[0];
+      var take = Math.min(lot.qty, need);
+      cost += take * lot.unit;
+      lot.qty -= take;
+      need -= take;
+      if (lot.qty <= 1e-12) lots.shift();
+    }
+    if (need > 1e-9) throw new Error('OVERSOLD');
+  });
+  return { proceeds: proceeds, cost: cost, fees: fees, gain: proceeds - cost };
+}
+function calcWac(buys, sells) {
+  var totalCost = 0, totalQty = 0;
+  buys.forEach(function (b) { totalCost += b.qty * b.price + b.fee; totalQty += b.qty; });
+  var avg = totalQty > 0 ? totalCost / totalQty : 0;
+  var proceeds = 0, cost = 0, fees = 0, sellQty = 0;
+  sells.forEach(function (s) {
+    proceeds += s.qty * s.price - s.fee;
+    fees += s.fee;
+    cost += s.qty * avg;
+    sellQty += s.qty;
+  });
+  if (sellQty > totalQty + 1e-9) throw new Error('OVERSOLD');
+  return { proceeds: proceeds, cost: cost, fees: fees, gain: proceeds - cost, avg: avg };
+}
+// 境內路線：所得併入綜所稅，稅額增加 = tax(otherNet + gain) - tax(otherNet)
+function domesticExtraTax(gain, otherNet) {
+  if (gain <= 0) return 0;
+  return incomeTax115(otherNet + gain) - incomeTax115(otherNet);
+}
+// 海外路線：overseasTotal = 本筆所得 + 其他海外所得
+// 未達 100 萬不計入；達 100 萬全數計入基本所得額；基本稅額 = max(0, 基本所得額 - 750萬) * 20%
+function overseasCalc(gain, otherOverseas, otherBase, generalTax) {
+  var overseasTotal = gain + otherOverseas;
+  var included = overseasTotal >= 1000000;
+  var baseIncome = included ? (otherBase + overseasTotal) : otherBase;
+  var basicTax = included ? Math.max(0, baseIncome - 7500000) * 0.20 : 0;
+  var extra = null;
+  if (included && generalTax !== null && generalTax !== undefined) {
+    extra = Math.max(0, Math.round(basicTax) - generalTax);
+  }
+  return { overseasTotal: overseasTotal, included: included, baseIncome: baseIncome, basicTax: Math.round(basicTax), extra: extra };
+}
+
+function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function fmtSigned(n) { return (n < 0 ? '−' : '') + fmt(Math.abs(n)); }
+
+// ---------- DOM 操作 ----------
+if (typeof document !== 'undefined') {
+  var buyBody = document.getElementById('buyBody');
+  var sellBody = document.getElementById('sellBody');
+  var errBox = document.getElementById('errBox');
+
+  function rowHtml(kind) {
+    return '<tr>' +
+      '<td><input type="date" class="d"></td>' +
+      '<td><input type="number" class="q" min="0" step="any" placeholder="0.5"></td>' +
+      '<td><input type="number" class="p" min="0" step="any" placeholder="2800000"></td>' +
+      '<td><input type="number" class="f" min="0" step="any" placeholder="0"></td>' +
+      '<td><button class="del" type="button" onclick="this.closest(\'tr\').remove()">✕</button></td>' +
+      '</tr>';
+  }
+  function addRow(body) { body.insertAdjacentHTML('beforeend', rowHtml()); }
+  function readRows(body) {
+    var out = [];
+    body.querySelectorAll('tr').forEach(function (tr) {
+      var q = parseFloat(tr.querySelector('.q').value);
+      var p = parseFloat(tr.querySelector('.p').value);
+      var f = parseFloat(tr.querySelector('.f').value) || 0;
+      if (!isNaN(q) && !isNaN(p)) out.push({ qty: q, price: p, fee: f });
+    });
+    return out;
+  }
+  function setRows(body, rows) {
+    body.innerHTML = '';
+    rows.forEach(function (r) {
+      addRow(body);
+      var tr = body.querySelector('tr:last-child');
+      tr.querySelector('.d').value = r.date || '';
+      tr.querySelector('.q').value = r.qty;
+      tr.querySelector('.p').value = r.price;
+      tr.querySelector('.f').value = r.fee;
+    });
+  }
+  document.getElementById('addBuy').addEventListener('click', function () { addRow(buyBody); });
+  document.getElementById('addSell').addEventListener('click', function () { addRow(sellBody); });
+  addRow(buyBody); addRow(buyBody); addRow(sellBody);
+
+  document.getElementById('sampleBtn').addEventListener('click', function () {
+    document.getElementById('coin').value = 'BTC';
+    setRows(buyBody, [
+      { date: '2026-02-10', qty: 0.5, price: 2800000, fee: 1400 },
+      { date: '2026-05-20', qty: 0.3, price: 3200000, fee: 960 }
+    ]);
+    setRows(sellBody, [
+      { date: '2026-09-15', qty: 0.6, price: 3500000, fee: 2100 }
+    ]);
+    document.getElementById('otherNet').value = '800000';
+    errBox.style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', function () {
+    errBox.style.display = 'none';
+    var coin = (document.getElementById('coin').value || '加密資產').trim();
+    var venue = document.querySelector('input[name="venue"]:checked').value;
+    var buys = readRows(buyBody);
+    var sells = readRows(sellBody);
+    if (buys.length === 0) { errBox.textContent = '請至少填一筆買入紀錄（數量與買入單價）。'; errBox.style.display = 'block'; return; }
+    if (sells.length === 0) { errBox.textContent = '請至少填一筆賣出紀錄；還沒賣出的部位不計入當年度所得。'; errBox.style.display = 'block'; return; }
+    var bad = buys.concat(sells).some(function (r) { return r.qty <= 0 || r.price < 0 || r.fee < 0; });
+    if (bad) { errBox.textContent = '數量須大於 0，單價與手續費不可為負數，請檢查。'; errBox.style.display = 'block'; return; }
+    var fifo, wac;
+    try {
+      fifo = calcFifo(buys, sells);
+      wac = calcWac(buys, sells);
+    } catch (e) {
+      errBox.textContent = '賣出數量超過買入總數量，請檢查紀錄（不能賣出比買進更多的幣）。';
+      errBox.style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+      return;
+    }
+    var otherNet = parseFloat(document.getElementById('otherNet').value) || null;
+    var otherOverseas = parseFloat(document.getElementById('otherOverseas').value) || 0;
+    var otherBase = parseFloat(document.getElementById('otherBase').value) || 0;
+    var generalTaxRaw = document.getElementById('generalTax').value;
+    var generalTax = generalTaxRaw === '' ? null : (parseFloat(generalTaxRaw) || 0);
+    var diff = fifo.gain - wac.gain;
+
+    var sumHtml = '<div>' + coin + '・已實現損益（兩種方法對照）</div>' +
+      '<div>總賣出金額（已扣手續費）：NT$ ' + fmt(fifo.proceeds) + ' 元</div>' +
+      '<div>總買入金額：NT$ ' + fmt(buys.reduce(function (a, b) { return a + b.qty * b.price + b.fee; }, 0)) + ' 元（含買入手續費）</div>' +
+      '<div>兩種方法算出的所得相差 NT$ ' + fmt(Math.abs(diff)) + ' 元' + (diff !== 0 ? '（FIFO ' + (diff > 0 ? '較高' : '較低') + '）' : '（相同）') + '。</div>';
+    document.getElementById('rSummary').innerHTML = sumHtml;
+
+    function gainHtml(el, r) {
+      var g = r.gain;
+      el.textContent = (g >= 0 ? '＋NT$ ' : '−NT$ ') + fmt(Math.abs(g));
+      el.className = 'amt ' + (g >= 0 ? 'pos' : 'neg');
+    }
+    gainHtml(document.getElementById('rFifoGain'), fifo);
+    gainHtml(document.getElementById('rWacGain'), wac);
+    document.getElementById('rFifoDetail').innerHTML =
+      '<div>賣出金額<span><b>NT$ ' + fmt(fifo.proceeds) + '</b></span></div>' +
+      '<div>成本（先扣最早買的）<span><b>NT$ ' + fmt(fifo.cost) + '</b></span></div>' +
+      '<div>賣出手續費<span><b>NT$ ' + fmt(fifo.fees) + '</b></span></div>';
+    document.getElementById('rWacDetail').innerHTML =
+      '<div>賣出金額<span><b>NT$ ' + fmt(wac.proceeds) + '</b></span></div>' +
+      '<div>成本（平均單價 NT$ ' + fmt(wac.avg) + '）<span><b>NT$ ' + fmt(wac.cost) + '</b></span></div>' +
+      '<div>賣出手續費<span><b>NT$ ' + fmt(wac.fees) + '</b></span></div>';
+    document.getElementById('rMethodNote').textContent = '財政部尚未明文規定個人虛擬資產應採何種成本計算方法，實務上擇一採用、年度間不宜任意變更。兩種結果僅供對照，申報時請選定一種並保留計算表。';
+
+    // 稅額對照：以 FIFO 與加權平均各算一次，呈現區間
+    var taxHtml = '<h3>稅額對照（兩條路線都列，請看你的交易所所在地）</h3>';
+    var gains = [];
+    if (fifo.gain !== wac.gain) gains = [fifo, wac]; else gains = [fifo];
+    gains.forEach(function (g, idx) {
+      var tag = gains.length > 1 ? (idx === 0 ? '（FIFO）' : '（加權平均）') : '';
+      var gain = g.gain;
+      if (gain > 0) {
+        // 境內
+        var dom;
+        if (otherNet !== null) {
+          var extra = domesticExtraTax(gain, otherNet);
+          var rate = marginalRate115(otherNet + gain);
+          dom = '併入綜所稅後，稅額約增加 <b>NT$ ' + fmt(extra) + ' 元</b>（以你填的其他綜合所得淨額 NT$ ' + fmt(otherNet) + ' 元、115 年度級距試算；邊際稅率約 ' + Math.round(rate * 100) + '%）';
+        } else {
+          var rows = [0.05, 0.12, 0.20, 0.30, 0.40].map(function (r) {
+            return Math.round(r * 100) + '%：約 NT$ ' + fmt(gain * r) + ' 元';
+          }).join('；');
+          dom = '未填其他綜合所得淨額，僅列邊際稅率對照（所得全額按該稅率估算，僅供參考）：' + rows;
+        }
+        // 海外
+        var ov = overseasCalc(gain, otherOverseas, otherBase, generalTax);
+        var ovTxt;
+        if (!ov.included) {
+          ovTxt = '全戶全年海外所得合計 NT$ ' + fmt(ov.overseasTotal) + ' 元，未達 100 萬元門檻，<b>不計入基本所得額</b>，最低稅負為 0 元。';
+        } else {
+          ovTxt = '全戶全年海外所得合計 NT$ ' + fmt(ov.overseasTotal) + ' 元，已達 100 萬元門檻，全數計入基本所得額 NT$ ' + fmt(ov.baseIncome) + ' 元；基本稅額＝（' + fmt(ov.baseIncome) + ' − 7,500,000）× 20% ＝ <b>NT$ ' + fmt(ov.basicTax) + ' 元</b>' +
+            (ov.extra === null ? '（未填一般所得稅額，無法算補繳差額；最低稅負是基本稅額與一般所得稅額取高者）' : '；與一般所得稅額比較後，約需補繳 <b>NT$ ' + fmt(ov.extra) + ' 元</b>');
+        }
+        taxHtml += '<div style="margin-bottom:10px;"><b>所得 NT$ ' + fmt(gain) + ' 元' + tag + '</b><br>' +
+          '・<b>境內路線（綜所稅）：</b>' + dom + '<br>' +
+          '・<b>海外路線（最低稅負）：</b>' + ovTxt + '</div>';
+      } else {
+        taxHtml += '<div style="margin-bottom:10px;"><b>所得 NT$ ' + fmtSigned(gain) + ' 元' + tag + '（虧損）</b><br>' +
+          '・<b>境內路線：</b>當年度無財產交易所得可課稅；財產交易損失可列報特別扣除額，自同年度財產交易所得中扣除。<br>' +
+          '・<b>海外路線：</b>海外財產交易損失只能扣抵同年度的海外財產交易所得，不得往後年度扣抵，且須以實際成交價與成本計算並經稽徵機關核實認定。</div>';
+      }
+    });
+    taxHtml += '<div class="hint">提醒：境內外認定財政部尚未明文，本工具依你勾選的交易所所在地呈現對應路線；若兩邊都有交易，請分開各算一次再加總判斷。金額可能依物價指數調整，申報前請以財政部當年度公告為準。</div>';
+    document.getElementById('rTax').innerHTML = taxHtml;
+
+    var lossHtml = '<b>虧損與紀錄提醒</b><br>';
+    if (fifo.gain < 0 || wac.gain < 0) {
+      lossHtml += '<span class="warn">本筆交易為虧損，損失的扣抵方式境內外不同（見上方），且海外損失不能留到明年用。</span><br>';
+    }
+    lossHtml += '<span class="note">請保留：交易所成交明細（日期、交易對、價格、數量、手續費）、入金出金紀錄、鏈上轉帳 TxID、每年度損益與成本計算表。若無法證明成本，國稅局得依規定標準或比例認定所得。</span>';
+    document.getElementById('rLoss').innerHTML = lossHtml;
+
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    buyBody.innerHTML = ''; sellBody.innerHTML = '';
+    addRow(buyBody); addRow(buyBody); addRow(sellBody);
+    ['otherNet', 'otherOverseas', 'otherBase', 'generalTax'].forEach(function (id) { document.getElementById(id).value = ''; });
+    document.getElementById('result').style.display = 'none';
+    errBox.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+</script>
+</body>
+</html>
